@@ -16,14 +16,14 @@
 </head>
 <body>
     <div class="container-sm w-25">
-        <form action="sign-in.php" method="POST">
+        <form action="php-functions/sign_in.php" method="POST">
             <div class="mb-3">
                 <label for="emailInput" class="form-label">Email Address</label>
-                <input type="email" class="form-control" id="emailInput" aria-describedby="emailHelp">
+                <input type="email" class="form-control" name="emailInput" id="emailInput" aria-describedby="emailHelp">
             </div>
             <div class="mb-3">
                 <label for="passwordInput" class="form-label">Password</label>
-                <input type="password" class="form-control" id="passwordInput" aria-describedby="passwordHelp">
+                <input type="password" class="form-control" name="passwordInput" id="passwordInput" aria-describedby="passwordHelp">
                 <input type="checkbox"> <label class="form-label"> Show Password</label>
             </div>
             <div class="mb-3">

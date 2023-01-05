@@ -31,9 +31,9 @@
 
         function __construct($username, $email, $password, $conn, $salt)
         {
-            $this->username = $username;
-            $this->email = $email;
-            $this->password = $password;
+            $this->username = mysqli_real_escape_string($conn,$username);
+            $this->email = mysqli_real_escape_string($conn,$email);
+            $this->password = mysqli_real_escape_string($conn,$password);
             $this->conn = $conn;
             $this->salt = $salt;
         }
@@ -48,9 +48,14 @@
     $username = $_POST['usernameInput'];
     $email = $_POST['emailInput'];
     $password = encryptPassword($_POST['passwordInput'],$salt);
+    $passwordBare = $_POST['passwordInput'];
     $passwordConfirm = $_POST['passwordInputConfirm'];
-    $user = new User($username, $email, $password, $conn, $salt);
-    $user->insert();
-    $conn->close();
-    header("Location: ../index.php");
+    if (checkPasswords($passwordBare,$passwordConfirm)){
+        $user = new User($username,$email,$password,$conn,$salt);
+        $user->insert();
+        header("Location: ../index.php");
+    }
+    else{
+        echo "Passwords do not match";
+    }
 ?>
