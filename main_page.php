@@ -8,6 +8,17 @@ include "php-functions/db-connection.php"
 </head>
 <body>
     <?php include "modules/navbar.php" ?>
+    <?php
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $conn = connect();
+        $messageContent = mysqli_real_escape_string($conn,$_POST['newMessageInput']);
+        $uid = $_SESSION['UID'];
+        $sql = "INSERT INTO messages (message_content,user_id) values ('$messageContent','$uid')";
+        $sqlquery = $conn->query($sql);
+        $conn->close();
+        header("Location: main_page.php");
+    }
+    ?>
     <br>
     <div class="modal fade" id="newMessageModal" tabindex="-1" aria-labelledby="newMessageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -16,16 +27,19 @@ include "php-functions/db-connection.php"
                     <h1 class="modal-title fs-5" id="newMessageModalLabel">New Message</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="input-group mb-3">
-                        <textarea class="form-control" maxlength="256" minlength="1" id="newMessageInput"></textarea>
-                        <span class="input-group-text" id="charCounter"> / 256</span>
+                <form action="main_page.php" method="POST">
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+
+                                <textarea class="form-control" maxlength="256" minlength="1" id="newMessageInput" name="newMessageInput"></textarea>
+                                <span class="input-group-text" id="charCounter"> / 256</span>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Send</button>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary" value="Send" name="sendMessageButton">
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -52,7 +66,7 @@ include "php-functions/db-connection.php"
         <br>
         <?php
             $conn = connect();
-            $sql = "SELECT * FROM messages";
+            $sql = "SELECT * FROM messages ORDER BY message_id DESC";
             $sqlquery = $conn->query($sql);
             while($row = $sqlquery->fetch_assoc()) {
                 $namesql = "SELECT username FROM users WHERE id = '$row[user_id]'";
@@ -77,7 +91,9 @@ include "php-functions/db-connection.php"
                      </div>
                      <br>
                     ';
+
             }
+            $conn->close();
         ?>
     </div>
     <script>

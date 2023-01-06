@@ -12,12 +12,13 @@
             $this->conn = $conn;
         }
         function checkPassword(){
-            $sql = "SELECT password,salt,username,role_num FROM users WHERE email = '$this->email'";
+            $sql = "SELECT id,password,salt,username,role_num FROM users WHERE email = '$this->email'";
             $sqlquery = $this->conn->query($sql);
             $row = $sqlquery->fetch_assoc();
             if (password_verify($row['salt'].$this->password,$row['password'])){
                 $_SESSION['username'] = $row['username'];
                 $_SESSION['role'] = $row['role_num'];
+                $_SESSION['UID'] = $row['id'];
                 header("Location: ../main_page.php");
             }
             else{
