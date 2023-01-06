@@ -17,11 +17,14 @@ include "php-functions/db-connection.php"
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    ...
+                    <div class="input-group mb-3">
+                        <textarea class="form-control" maxlength="256" minlength="1" id="newMessageInput"></textarea>
+                        <span class="input-group-text" id="charCounter"> / 256</span>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-primary">Send</button>
                 </div>
             </div>
         </div>
@@ -77,5 +80,15 @@ include "php-functions/db-connection.php"
             }
         ?>
     </div>
+    <script>
+        $(document).ready(function(){
+            console.log("Yayyy")
+            $("#newMessageInput").bind("keyup", function(){
+                var counter = $('#newMessageInput').val().length;
+                var completeCounter =(counter + " / 256");
+                $('#charCounter').text(completeCounter);
+            })
+        })
+    </script>
 </body>
 </html>
