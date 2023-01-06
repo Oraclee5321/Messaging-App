@@ -77,7 +77,7 @@ include "php-functions/db-connection.php"
                         <div class="col-6 col-md-4">
                         </div>
                         <div class="col-6 col-md-4">
-                            <div class="card" style="width: 18rem;">
+                            <div class="card" style="width: 18rem;background-color:'.($username['username'] == $_SESSION['username'] ? "aqua" : "white").'">
                                 <div class="card-title">
                                     User: '.$username['username'].'
                                 </div>
@@ -105,20 +105,19 @@ include "php-functions/db-connection.php"
         setInterval(function () {
             $.ajax({
                 type: "POST",
-                url: "php-functions/check-update.php", //put relative url here, script which will return php
+                url: "php-functions/check-update.php",
                 dataType: "json",
                 success: function (response) {
-                    var data = response; // response data from your php script
+                    var data = response;
                     if (parseInt(lastMessage) < parseInt(data)) {
                         $("#messages").load(location.href + " #messages");
                     }
                 }
             });
-        }, 3000);// function will run every 5 seconds
+        }, 1000);
     </script>
     <script>
         $(document).ready(function(){
-            console.log("Yayyy")
             $("#newMessageInput").bind("keyup", function(){
                 var counter = $('#newMessageInput').val().length;
                 var completeCounter =(counter + " / 256");
