@@ -12,6 +12,15 @@
                 <li class="nav-item">
                     <a class="nav-link" aria-current="page" href="#">Log Out</a>
                 </li>
+                <li class="navbar-text">
+                    <?php
+                    if (isset($_SESSION['username'])) {
+                    echo "Welcome, " . $_SESSION['username'];
+                    } else {
+                    echo "Welcome, Guest!";
+                    }
+                    ?>
+                </li>
             </ul>
         </div>
     </div>
