@@ -43,7 +43,7 @@ include "php-functions/db-connection.php"
             </div>
         </div>
     </div>
-    <div class="container">
+    <div class="container" id="messages">
         <div class="row">
             <div class="col-6 col-md-4">
             </div>
@@ -93,9 +93,29 @@ include "php-functions/db-connection.php"
                     ';
 
             }
+            $sql = "SELECT message_id FROM messages ORDER BY message_id DESC LIMIT 1";
+            $sqlquery = $conn->query($sql);
+            $row = $sqlquery->fetch_assoc();
+            $result = $row['message_id'];
             $conn->close();
         ?>
     </div>
+    <script type="text/javascript">
+        var lastMessage = <?php echo $result ?>;
+        setInterval(function () {
+            $.ajax({
+                type: "POST",
+                url: "php-functions/check-update.php", //put relative url here, script which will return php
+                dataType: "json",
+                success: function (response) {
+                    var data = response; // response data from your php script
+                    if (parseInt(lastMessage) < parseInt(data)) {
+                        $("#messages").load(location.href + " #messages");
+                    }
+                }
+            });
+        }, 3000);// function will run every 5 seconds
+    </script>
     <script>
         $(document).ready(function(){
             console.log("Yayyy")
