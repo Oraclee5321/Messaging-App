@@ -37,7 +37,7 @@ include "php-functions/db-connection.php"
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <input type="submit" class="btn btn-primary" value="Send" name="sendMessageButton">
+                        <input type="submit" class="btn btn-primary" value="Send" name="sendMessageButton" data-bs-dismiss="modal">
                     </div>
                 </form>
             </div>
@@ -83,6 +83,12 @@ include "php-functions/db-connection.php"
                                 </div>
                                 <div class="card-body">
                                     '.$row['message_content'].'
+                                </div>
+                                <div class="card-footer" style="display:'.($_SESSION['role'] > 0 ? "none":"").'">
+                                <form action="php-functions/delete-post.php" method="POST">
+                                    <input type="hidden" name="messageID" value="'.$row['message_id'].'">
+                                    <input type="submit" class="btn btn-danger" value="Delete Message" name="deleteMessageButton">
+                                </form>
                                 </div>
                             </div>
                         </div>
