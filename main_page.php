@@ -1,5 +1,4 @@
 <?php
-session_start();
 include "php-functions/db-connection.php";
 include "classes/user-class.php";
 $conn = connect();
@@ -14,11 +13,8 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
     <?php include "modules/navbar.php" ?>
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $messageContent = mysqli_real_escape_string($conn,$_POST['newMessageInput']);
-        $uid = $_SESSION['UID'];
-        $sql = "INSERT INTO messages (message_content,user_id) values ('$messageContent','$uid')";
-        $sqlquery = $conn->query($sql);
-        header("Location: main_page.php");
+        $newMessageInput = $_POST['newMessageInput'];
+        $user->sendMessage($newMessageInput,$conn);
     }
     ?>
     <br>

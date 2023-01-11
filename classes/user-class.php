@@ -29,6 +29,17 @@ class User{
             echo "Nooo";
         }
     }
+    function sendMessage($newMessageInput,$conn){
+        $messageContent = mysqli_real_escape_string($conn,$newMessageInput);
+        $uid = $_SESSION['UID'];
+        $sql = "INSERT INTO messages (message_content,user_id) values ('$messageContent','$uid')";
+        $sqlquery = $conn->query($sql);
+        header("Location: main_page.php");
+    }
+    function insert($password_input,$salt_input){
+        $sql = "INSERT INTO users (username, email, password,role_num,salt) VALUES ('$this->username', '$this->email', '$password_input', '0', '$salt_input')";
+        $sqlquery = $this->conn->query($sql);
+    }
 }
 
 ?>
