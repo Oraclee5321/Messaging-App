@@ -1,5 +1,6 @@
 <?php
     include "db-connection.php";
+    include "../classes/user-class.php";
     $conn = connect();
     function generateSalt(){
         $salt = "";
@@ -21,29 +22,6 @@
             return false;
         }
     }
-    class User
-    {
-        public $username;
-        public $email;
-        public $password;
-        public $salt;
-        private $conn;
-
-        function __construct($username, $email, $password, $conn, $salt)
-        {
-            $this->username = mysqli_real_escape_string($conn,$username);
-            $this->email = mysqli_real_escape_string($conn,$email);
-            $this->password = mysqli_real_escape_string($conn,$password);
-            $this->conn = $conn;
-            $this->salt = $salt;
-        }
-
-        function insert()
-        {
-            $sql = "INSERT INTO users (username, email, password,is_active,salt) VALUES ('$this->username', '$this->email', '$this->password', '0', '$this->salt')";
-            $sqlquery = $this->conn->query($sql);
-        }
-    }
     $salt = generateSalt();
     $username = $_POST['usernameInput'];
     $email = $_POST['emailInput'];
@@ -51,8 +29,8 @@
     $passwordBare = $_POST['passwordInput'];
     $passwordConfirm = $_POST['passwordInputConfirm'];
     if (checkPasswords($passwordBare,$passwordConfirm)){
-        $user = new User($username,$email,$password,$conn,$salt);
-        $user->insert();
+        $user = new User(0,$username,$email,0,$conn);
+        $user->insert($password,$salt);
         header("Location: ../index.php");
     }
     else{
