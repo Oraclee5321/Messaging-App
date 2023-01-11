@@ -1,5 +1,4 @@
 <?php
-    session_start();
     include "php-functions/db-connection.php";
     $conn = connect();
 ?>
@@ -34,3 +33,7 @@
     </div>
 </body>
 </html>
+
+<?php
+$conn->close()
+?>

@@ -1,6 +1,7 @@
 <?php
 session_start();
-include "php-functions/db-connection.php"
+include "php-functions/db-connection.php";
+$conn = connect()
 ?>
 <html>
 <head>
@@ -10,12 +11,10 @@ include "php-functions/db-connection.php"
     <?php include "modules/navbar.php" ?>
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $conn = connect();
         $messageContent = mysqli_real_escape_string($conn,$_POST['newMessageInput']);
         $uid = $_SESSION['UID'];
         $sql = "INSERT INTO messages (message_content,user_id) values ('$messageContent','$uid')";
         $sqlquery = $conn->query($sql);
-        $conn->close();
         header("Location: main_page.php");
     }
     ?>
@@ -27,11 +26,11 @@ include "php-functions/db-connection.php"
                     <h1 class="modal-title fs-5" id="newMessageModalLabel">New Message</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="main_page.php" method="POST">
-                    <div class="modal-body">
+                <form action="main_page.php" method="POST">                    <div class="modal-body">
                         <div class="input-group mb-3">
+                                <textarea class="form-control" maxlength="256" minlength="1" id="messageInput" name="newMessageInput">
 
-                                <textarea class="form-control" maxlength="256" minlength="1" id="newMessageInput" name="newMessageInput"></textarea>
+                                </textarea>
                                 <span class="input-group-text" id="charCounter"> / 256</span>
                         </div>
                     </div>
@@ -65,7 +64,6 @@ include "php-functions/db-connection.php"
         </div>
         <br>
         <?php
-            $conn = connect();
             $sql = "SELECT * FROM messages ORDER BY message_id DESC";
             $sqlquery = $conn->query($sql);
             while($row = $sqlquery->fetch_assoc()) {
@@ -84,10 +82,14 @@ include "php-functions/db-connection.php"
                                 <div class="card-body">
                                     '.$row['message_content'].'
                                 </div>
-                                <div class="card-footer" style="display:'.($_SESSION['role'] > 0 ? "none":"").'">
+                                <div class="card-footer"">
+                                <form action="php-functions/edit-message.php" method="POST">
+                                    <input type="hidden" name="messageID" value="'.$row['message_id'].'">
+                                    <input type="submit" class="btn btn-success" value="Edit Message"/>
+                                </form>
                                 <form action="php-functions/delete-post.php" method="POST">
                                     <input type="hidden" name="messageID" value="'.$row['message_id'].'">
-                                    <input type="submit" class="btn btn-danger" value="Delete Message" name="deleteMessageButton">
+                                    <input type="submit" style="display:'.($_SESSION['role'] < 0 ? "none":"").'" class="btn btn-danger" value="Delete Message" name="deleteMessageButton"/>
                                 </form>
                                 </div>
                             </div>
@@ -103,7 +105,6 @@ include "php-functions/db-connection.php"
             $sqlquery = $conn->query($sql);
             $row = $sqlquery->fetch_assoc();
             $result = $row['message_id'];
-            $conn->close();
         ?>
     </div>
     <script type="text/javascript">
@@ -125,7 +126,7 @@ include "php-functions/db-connection.php"
     <script>
         $(document).ready(function(){
             $("#newMessageInput").bind("keyup", function(){
-                var counter = $('#newMessageInput').val().length;
+                var counter = $('#messageInput').val().length;
                 var completeCounter =(counter + " / 256");
                 $('#charCounter').text(completeCounter);
             })
@@ -133,3 +134,6 @@ include "php-functions/db-connection.php"
     </script>
 </body>
 </html>
+<?php
+$conn->close()
+?>
