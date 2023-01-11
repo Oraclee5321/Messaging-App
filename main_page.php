@@ -50,19 +50,21 @@ $conn = connect()
                     <h1 class="modal-title fs-5" id="editMessageModalLabel">New Message</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="input-group mb-3">
-                    <textarea class="form-control" maxlength="256" minlength="1" id="editMessageInput" name="editMessageInput">
-
-                    </textarea>
-                        <span class="input-group-text" id="editCharCounter"> / 256</span>
+                <form action="php-functions/edit-message.php" method="POST">
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <textarea class="form-control" maxlength="256" minlength="1" id="editMessageInput" name="editMessageInput">
+                            </textarea>
+                            <span class="input-group-text" id="editCharCounter"> / 256</span>
+                            <input type="hidden" name="messageIDValue" id="messageIDValue" value="">
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <input type="submit" class="btn btn-primary" value="Edit" name="editMessageButton"
-                           data-bs-dismiss="modal">
-                </div>
+                    <div class="modal-footer">
+
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary" value="Edit" name="editMessageButton" data-bs-dismiss="modal">
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -109,7 +111,7 @@ $conn = connect()
                                 <div class="card-footer"">
                                 <form action="" method="">
                                     <input type="hidden" name="messageID" value="'.$row['message_id'].'">
-                                    <input type="button" class="btn btn-success" value="Edit Message" onclick="currentMessage('.$row['message_id'].')" />
+                                    <input type="button" class="btn btn-success" style="display:'.($_SESSION['role'] <2 ? ($_SESSION['username'] == $username['username'] ? : "none") : "").'" value="Edit Message" onclick="currentMessage('.$row['message_id'].')" />
                                     <button type="button" style="display:none" data-bs-toggle="modal" data-bs-target="#editMessageModal") id="editMessageButton"></button>
                                 </form>
                                 <form action="php-functions/delete-post.php" method="POST">
@@ -154,9 +156,9 @@ $conn = connect()
             var modal = document.getElementById("editMessageModal");
             modal.addEventListener('show.bs.modal',function(event){
                 var previousMessage = document.getElementById("message_" + messageID).innerText;
-                console.log(previousMessage);
                 document.getElementById("editMessageInput").value = previousMessage;
                 $('#editCharCounter').text(previousMessage.length + " / 256");
+                document.getElementById("messageIDValue").value = messageID;
             });
             document.getElementById("editMessageButton").click();
 }
