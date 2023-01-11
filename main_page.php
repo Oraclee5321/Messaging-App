@@ -1,9 +1,7 @@
 <?php
+session_start();
 include "php-functions/db-connection.php";
-include "classes/user-class.php";
-$conn = connect();
-$user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SESSION['role'],connect());
-
+$conn = connect()
 ?>
 <html>
 <head>
@@ -13,8 +11,11 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
     <?php include "modules/navbar.php" ?>
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $newMessageInput = $_POST['newMessageInput'];
-        $user->sendMessage($newMessageInput,$conn);
+        $messageContent = mysqli_real_escape_string($conn,$_POST['newMessageInput']);
+        $uid = $_SESSION['UID'];
+        $sql = "INSERT INTO messages (message_content,user_id) values ('$messageContent','$uid')";
+        $sqlquery = $conn->query($sql);
+        header("Location: main_page.php");
     }
     ?>
     <br>
@@ -28,14 +29,40 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                 <form action="main_page.php" method="POST">
                     <div class="modal-body">
                         <div class="input-group mb-3">
+                                <textarea class="form-control" maxlength="256" minlength="1" id="messageInput" name="newMessageInput">
 
-                                <textarea class="form-control" maxlength="256" minlength="1" id="newMessageInput" name="newMessageInput"></textarea>
+                                </textarea>
                                 <span class="input-group-text" id="charCounter"> / 256</span>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <input type="submit" class="btn btn-primary" value="Send" name="sendMessageButton">
+                        <input type="submit" class="btn btn-primary" value="Send" name="sendMessageButton" data-bs-dismiss="modal">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editMessageModal" tabindex="-1" aria-labelledby="editMessageModalLabel" aria-hidden="false"> // Edit Message Modal
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="editMessageModalLabel">New Message</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="php-functions/edit-message.php" method="POST">
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <textarea class="form-control" maxlength="256" minlength="1" id="editMessageInput" name="editMessageInput">
+                            </textarea>
+                            <span class="input-group-text" id="editCharCounter"> / 256</span>
+                            <input type="hidden" name="messageIDValue" id="messageIDValue" value="">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary" value="Edit" name="editMessageButton" data-bs-dismiss="modal">
                     </div>
                 </form>
             </div>
@@ -78,8 +105,19 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                                 <div class="card-title">
                                     User: '.$username['username'].'
                                 </div>
-                                <div class="card-body">
+                                <div class="card-body" id="message_'.$row['message_id'].'">
                                     '.$row['message_content'].'
+                                </div>
+                                <div class="card-footer"">
+                                <form action="" method="">
+                                    <input type="hidden" name="messageID" value="'.$row['message_id'].'">
+                                    <input type="button" class="btn btn-success" style="display:'.($_SESSION['role'] <2 ? ($_SESSION['username'] == $username['username'] ? : "none") : "").'" value="Edit Message" onclick="currentMessage('.$row['message_id'].')" />
+                                    <button type="button" style="display:none" data-bs-toggle="modal" data-bs-target="#editMessageModal") id="editMessageButton"></button>
+                                </form>
+                                <form action="php-functions/delete-post.php" method="POST">
+                                    <input type="hidden" name="messageID" value="'.$row['message_id'].'">
+                                    <input type="submit" style="display:'.($_SESSION['role'] <2 ? "none":"").'" class="btn btn-danger" value="Delete Message" name="deleteMessageButton"/>
+                                </form>
                                 </div>
                             </div>
                         </div>
@@ -112,18 +150,22 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
             });
         }, 1000);
     </script>
-    <script>
-        $(document).ready(function(){
-            $("#newMessageInput").bind("keyup", function(){
-                var counter = $('#newMessageInput').val().length;
-                var completeCounter =(counter + " / 256");
-                $('#charCounter').text(completeCounter);
-            })
-        })
+    <script src="modules/char-counter.js"></script>
+    <script type="text/javascript">
+        function currentMessage(messageID) {
+            var modal = document.getElementById("editMessageModal");
+            modal.addEventListener('show.bs.modal',function(event){
+                var previousMessage = document.getElementById("message_" + messageID).innerText;
+                document.getElementById("editMessageInput").value = previousMessage;
+                $('#editCharCounter').text(previousMessage.length + " / 256");
+                document.getElementById("messageIDValue").value = messageID;
+            });
+            document.getElementById("editMessageButton").click();
+}
     </script>
+
 </body>
 </html>
-
 <?php
-    $conn->close();
+$conn->close()
 ?>
