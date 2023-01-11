@@ -1,6 +1,7 @@
 <?php
 session_start();
-include "php-functions/db-connection.php"
+include "php-functions/db-connection.php";
+$conn = connect();
 ?>
 <html>
 <head>
@@ -10,12 +11,10 @@ include "php-functions/db-connection.php"
     <?php include "modules/navbar.php" ?>
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $conn = connect();
         $messageContent = mysqli_real_escape_string($conn,$_POST['newMessageInput']);
         $uid = $_SESSION['UID'];
         $sql = "INSERT INTO messages (message_content,user_id) values ('$messageContent','$uid')";
         $sqlquery = $conn->query($sql);
-        $conn->close();
         header("Location: main_page.php");
     }
     ?>
@@ -65,7 +64,6 @@ include "php-functions/db-connection.php"
         </div>
         <br>
         <?php
-            $conn = connect();
             $sql = "SELECT * FROM messages ORDER BY message_id DESC";
             $sqlquery = $conn->query($sql);
             while($row = $sqlquery->fetch_assoc()) {
@@ -97,7 +95,6 @@ include "php-functions/db-connection.php"
             $sqlquery = $conn->query($sql);
             $row = $sqlquery->fetch_assoc();
             $result = $row['message_id'];
-            $conn->close();
         ?>
     </div>
     <script type="text/javascript">
@@ -127,3 +124,7 @@ include "php-functions/db-connection.php"
     </script>
 </body>
 </html>
+
+<?php
+    $conn->close();
+?>
