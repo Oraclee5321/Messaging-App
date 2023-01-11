@@ -1,7 +1,10 @@
 <?php
 session_start();
 include "php-functions/db-connection.php";
+include "classes/user-class.php";
 $conn = connect();
+$user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SESSION['role'],connect());
+
 ?>
 <html>
 <head>
