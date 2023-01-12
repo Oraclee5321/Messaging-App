@@ -7,7 +7,10 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="#">Home</a>
+                    <a class="nav-link" aria-current="page" href="main_page.php">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="account-settings.php">Account</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" aria-current="page" href="php-functions/log-out.php">Log Out</a>

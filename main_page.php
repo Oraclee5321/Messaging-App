@@ -27,6 +27,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
         }
     }
     ?>
+
     <br>
     <div class="modal fade" id="newMessageModal" tabindex="-1" aria-labelledby="newMessageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -64,7 +65,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                         <div class="input-group mb-3">
                             <textarea class="form-control" maxlength="256" minlength="1" id="editMessageInput" name="editMessageInput">
                             </textarea>
-                            <span class="input-group-text" id="editCharCounter"> / 256</span>
+                            <span class="input-group-text" id="editMessageCharCounter"> / 256</span>
                             <input type="hidden" name="messageIDValue" id="messageIDValue" value="">
                         </div>
                     </div>
@@ -167,7 +168,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
             modal.addEventListener('show.bs.modal',function(event){
                 var previousMessage = document.getElementById("message_" + messageID).innerText;
                 document.getElementById("editMessageInput").value = previousMessage;
-                $('#editCharCounter').text(previousMessage.length + " / 256");
+                $('#editMessageCharCounter').text(previousMessage.length + " / 256");
                 document.getElementById("messageIDValue").value = messageID;
             });
             document.getElementById("editMessageButton").click();
