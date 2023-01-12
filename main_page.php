@@ -1,7 +1,8 @@
 <?php
-session_start();
 include "php-functions/db-connection.php";
-$conn = connect()
+include "classes/user-class.php";
+$conn = connect();
+$user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SESSION['role'],connect());
 ?>
 <html>
 <head>
@@ -11,11 +12,19 @@ $conn = connect()
     <?php include "modules/navbar.php" ?>
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $messageContent = mysqli_real_escape_string($conn,$_POST['newMessageInput']);
-        $uid = $_SESSION['UID'];
-        $sql = "INSERT INTO messages (message_content,user_id) values ('$messageContent','$uid')";
-        $sqlquery = $conn->query($sql);
-        header("Location: main_page.php");
+        if (isset($_POST['newMessageInput'])){
+            $newMessageInput = $_POST['newMessageInput'];
+            $user->sendMessage($newMessageInput, $conn);
+        }
+        if (isset($_POST['editMessageInput'])){
+            $id = $_POST['messageIDValue'];
+            $text = mysqli_real_escape_string($conn,$_POST['editMessageInput']);
+            $user->editMessage($id,$text,$conn);
+        }
+        if (isset($_POST['deletePostCheck'])){;
+            $id = $_POST['messageID'];
+            $user->deletePost($id,$conn);
+        }
     }
     ?>
     <br>
@@ -50,7 +59,7 @@ $conn = connect()
                     <h1 class="modal-title fs-5" id="editMessageModalLabel">New Message</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="php-functions/edit-message.php" method="POST">
+                <form action="main_page.php" method="POST">
                     <div class="modal-body">
                         <div class="input-group mb-3">
                             <textarea class="form-control" maxlength="256" minlength="1" id="editMessageInput" name="editMessageInput">
@@ -114,8 +123,9 @@ $conn = connect()
                                     <input type="button" class="btn btn-success" style="display:'.($_SESSION['role'] <2 ? ($_SESSION['username'] == $username['username'] ? : "none") : "").'" value="Edit Message" onclick="currentMessage('.$row['message_id'].')" />
                                     <button type="button" style="display:none" data-bs-toggle="modal" data-bs-target="#editMessageModal") id="editMessageButton"></button>
                                 </form>
-                                <form action="php-functions/delete-post.php" method="POST">
+                                <form action="main_page.php" method="POST">
                                     <input type="hidden" name="messageID" value="'.$row['message_id'].'">
+                                    <input type="hidden" name="deletePostCheck" value="1">
                                     <input type="submit" style="display:'.($_SESSION['role'] <2 ? "none":"").'" class="btn btn-danger" value="Delete Message" name="deleteMessageButton"/>
                                 </form>
                                 </div>
