@@ -10,7 +10,7 @@
                     <a class="nav-link" aria-current="page" href="#">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="#">Log Out</a>
+                    <a class="nav-link" aria-current="page" href="php-functions/log-out.php">Log Out</a>
                 </li>
                 <li class="navbar-text">
                     <?php
