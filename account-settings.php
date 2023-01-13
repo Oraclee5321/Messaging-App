@@ -16,10 +16,9 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                 $newUsername = $_POST['editUsernameInput'];
                 $user->changeUsername($newUsername, $conn);
             }
-            if (isset($_POST['editMessageInput'])){
-                $id = $_POST['messageIDValue'];
-                $text = mysqli_real_escape_string($conn,$_POST['editMessageInput']);
-                $user->editMessage($id,$text,$conn);
+            if (isset($_POST['editEmailInput'])){
+                $newUsername = $_POST['editEmailInput'];
+                $user->changeEmail($newUsername, $conn);
             }
             if (isset($_POST['deletePostCheck'])){;
                 $id = $_POST['messageID'];
@@ -27,7 +26,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
             }
         }
         ?>
-        <div class="modal fade" id="editUsernameModal" tabindex="-1" aria-labelledby="editUsernameLabel" aria-hidden="false">
+        <div class="modal fade" id="editUsernameModal" tabindex="-1" aria-labelledby="editUsernameLabel" aria-hidden="false"><!-- Edit Username Modal -->
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -48,7 +47,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                     </form>
                 </div>
             </div>
-        </div><!-- Edit Username Modal -->
+        </div><!-- End Edit Username Modal -->
         <div class="modal fade" id="editEmailModal" tabindex="-1" aria-labelledby="editEmailLabel" aria-hidden="false"><!-- Edit Email Modal -->
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -59,7 +58,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                     <form action="account-settings.php" method="POST">
                         <div class="modal-body">
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control" maxlength="50" minlength="1" id="editEmailInput" name="editEmailInput">
+                                <input type="email" class="form-control" maxlength="50" minlength="1" id="editEmailInput" name="editEmailInput">
                                 <span class="input-group-text" id="editEmailCharCounter"> / 50</span>
                             </div>
                         </div>
@@ -70,7 +69,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                     </form>
                 </div>
             </div>
-        </div>
+        </div><!-- End Edit Email Modal -->
         <div class="container ">
             <div class="row">
                 <div class="col">
@@ -118,18 +117,18 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
             function currentUsername() {
                 var modal = document.getElementById("editUsernameModal");
                 modal.addEventListener('show.bs.modal',function(event){
-                    var username = <?php echo $user->username ?>;
+                    var username = "<?php echo $user->username ?>";
                     document.getElementById("editUsernameInput").value = username;
                     $('#editUsernameCharCounter').text(<?php echo strlen($user->username) ?> + " / 50");
                 });
                 document.getElementById("editUsernameButton").click();
-            }
+            };
             function currentEmail(){
                 var modal = document.getElementById("editEmailModal");
                 modal.addEventListener('show.bs.modal',function(event){
-                    var email = <?php echo $user->email ?>;
+                    var email = "<?php echo $user->email ?>";
                     document.getElementById("editEmailInput").value = email;
-                    $('#editUsernameCharCounter').text(<?php echo strlen($user->email) ?> + " / 50");
+                    $('#editEmailCharCounter').text(<?php echo strlen($user->email) ?> + " / 50");
                 });
                 document.getElementById("editEmailButton").click();
             }

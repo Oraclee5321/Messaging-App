@@ -80,7 +80,11 @@ class User
         header("Location: account-settings.php");
     }
     function changeEmail($newEmail,$conn){
-
+        $this->email = $newEmail;
+        $sql = "UPDATE users SET email = '".$this->email."' WHERE id = '".$this->id."'";
+        $sqlquery = $conn->query($sql);
+        $_SESSION['email'] = $this->email;
+        header("Location: account-settings.php");
     }
 }
 
