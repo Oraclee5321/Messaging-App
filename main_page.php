@@ -1,4 +1,5 @@
 <?php
+session_start();
 include "php-functions/db-connection.php";
 include "classes/user-class.php";
 $conn = connect();
@@ -154,7 +155,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                 dataType: "json",
                 success: function (response) {
                     var data = response;
-                    if (parseInt(lastMessage) < parseInt(data)) {
+                    if (parseInt(lastMessage) != parseInt(data)) {
                         $("#messages").load(location.href + " #messages");
                     }
                 }

@@ -27,6 +27,7 @@
     $password = encryptPassword($_POST['passwordInput'],$salt);
     $passwordBare = $_POST['passwordInput'];
     $passwordConfirm = $_POST['passwordInputConfirm'];
+    $conn = connect();
     if (checkPasswords($passwordBare,$passwordConfirm)){
         $user = new User(0,$username,$email,0,$conn);
         $user->insert($password,$salt);
