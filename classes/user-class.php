@@ -86,5 +86,10 @@ class User
         $_SESSION['email'] = $this->email;
         header("Location: account-settings.php");
     }
+    function deleteUserAdmin($conn){
+        $sql = "DELETE FROM users WHERE id =".$this->id."";
+        $sqlquery = $conn->query($sql);
+        header("Location: ../admin-menu.php");
+    }
 }
 
