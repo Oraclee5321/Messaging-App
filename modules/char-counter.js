@@ -6,7 +6,13 @@ $(document).ready(function(){
     })
     $("#editMessageInput").bind("keyup", function(){
         var counter = $('#editMessageInput').val().length;
-        var completeCounter =(counter + " / 256");
-        $('#editCharCounter').text(completeCounter);
+        var completeCounter = (counter + " / 256");
+        $('#editMessageCharCounter').text(completeCounter);
     })
+    $("#editUsernameInput").bind("keyup", function(){
+        var counter = $('#editUsernameInput').val().length;
+        var completeCounter = (counter + " / 50");
+        $('#editUsernameCharCounter').text(completeCounter);
+    })
+
 })

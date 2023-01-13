@@ -15,7 +15,7 @@
 </head>
 <body>
     <div class="container-sm w-25">
-        <form action="php-functions/sign_in.php" method="POST">
+        <form action="php-functions/sign-in.php" method="POST">
             <div class="mb-3">
                 <label for="emailInput" class="form-label">Email Address</label>
                 <input type="email" class="form-control" name="emailInput" id="emailInput" aria-describedby="emailHelp">

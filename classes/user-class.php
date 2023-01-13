@@ -13,7 +13,7 @@ class User
     function __construct($id_input, $username_input, $email_input, $role_num_input, $conn_input)
     {
         $this->id = $id_input;
-        $this->username = $username_input;
+        $this->username = strval($username_input);
         $this->email = $email_input;
         $this->role_num = $role_num_input;
         $this->conn = $conn_input;
@@ -60,6 +60,31 @@ class User
         $sql = "DELETE FROM messages WHERE message_id =".$id."";
         $sqlquery = $conn->query($sql);
         header("Location: main_page.php");
+    }
+    function getRoleName(){
+        if ($this->role_num == 0){
+            return "User";
+        }
+        else if ($this->role_num == 1){
+            return "Admin";
+        }
+        else if ($this->role_num == 2){
+            return "Super Admin";
+        }
+    }
+    function changeUsername($newUsername,$conn){
+        $this->username = $newUsername;
+        $sql = "UPDATE users SET username = '".$this->username."' WHERE email = '".$this->email."'";
+        $sqlquery = $conn->query($sql);
+        $_SESSION['username'] = $this->username;
+        header("Location: account-settings.php");
+    }
+    function changeEmail($newEmail,$conn){
+        $this->email = $newEmail;
+        $sql = "UPDATE users SET email = '".$this->email."' WHERE id = '".$this->id."'";
+        $sqlquery = $conn->query($sql);
+        $_SESSION['email'] = $this->email;
+        header("Location: account-settings.php");
     }
 }
 
