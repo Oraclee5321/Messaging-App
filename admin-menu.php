@@ -14,7 +14,14 @@ if ($user->role_num < 1){
 </head>
 <body>
 
-<?php include "modules/navbar.php"; ?>
+<?php include "modules/navbar.php";
+if (isset($_SESSION['error'])){
+    ?><div class="alert alert-danger" role="alert">
+        <?php echo $_SESSION['error'];?>
+    </div><?php
+    unset($_SESSION['error']);
+}
+?>
 <h1>Admin Menu</h1>
 <h2>Users</h2>
 <div class="modal fade modal-lg" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModal" aria-hidden="true">
@@ -24,7 +31,8 @@ if ($user->role_num < 1){
                 <h1 class="modal-title fs-5" id="editAccountModal">Edit User</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="admin-menu.php" method="POST">
+            <form action="php-functions/admin-functions.php" method="POST">
+                <input type="hidden" name="id" id="id" value="">
                 <div class="modal-body">
                     <div class="container">
                         <div class="row">
@@ -50,6 +58,7 @@ if ($user->role_num < 1){
                                     <select class="form-select" id="editRoleInput" name="editRoleInput">
                                         <option value="0">User</option>
                                         <option value="1">Admin</option>
+                                        <option value="2" <?php if ($user->role_num != 2){echo "disabled";} ?>>Super Admin</option>
                                     </select>
                                 </div>
                             </div>
@@ -58,7 +67,7 @@ if ($user->role_num < 1){
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <input type="submit" class="btn btn-primary" value="Send" name="sendMessageButton" data-bs-dismiss="modal">
+                    <input type="submit" class="btn btn-primary" value="Edit" name="editUser" data-bs-dismiss="modal">
                 </div>
             </form>
         </div>
@@ -71,6 +80,14 @@ $sql = "SELECT * FROM users";
 $sqlquery = $conn->query($sql);
 while ($row = $sqlquery->fetch_assoc()) {
     $tempuser = new User($row['id'], $row['username'], $row['email'], $row['role_num'], $conn);
+    if ($tempuser->role_num == 2) {
+        $issuperadmin = true;
+    } else {
+        $issuperadmin = false;
+    }
+    if ($user->role_num == 1 && $tempuser->role_num == 2) {
+       continue;
+    }
     echo
     '
      <div class="accordion-item">
@@ -85,12 +102,14 @@ while ($row = $sqlquery->fetch_assoc()) {
            <p>Email: ' . $tempuser->email . '</p>
            <p>Role: ' . $tempuser->getRoleName() . '</p>
            <form method="POST" action="php-functions/admin-functions.php">
-               <input type="hidden" name="id" value="' . $tempuser->id . '">
-               <input type="hidden" name="username" value="' . $tempuser->username . '">
-               <input type="hidden" name="email" value="' . $tempuser->email . '">
-               <input type="hidden" name="role" value="' . $tempuser->role_num . '">
-               <button class="btn btn-danger" type="submit" name="deleteUser" value="deleteUser">Delete User</button>
-               <input type="button" class="btn btn-primary" value="Edit User" onclick="editUser('.$tempuser->id.') " data-bs-toggle="modal" data-bs-target="#editAccountModal">
+               <input type="hidden" id="id_'.$tempuser->id.'" name="id" value="' . $tempuser->id . '">
+               <input type="hidden" id="username_'.$tempuser->id.'" name="username" value="' . $tempuser->username . '">
+               <input type="hidden" id="email_'.$tempuser->id.'" name="email" value="' . $tempuser->email . '">
+               <input type="hidden" id="role_'.$tempuser->id.'" name="role_num" value="' . $tempuser->role_num. '">
+               <input type="button" class="btn btn-primary" value="Edit User" onclick="editUser('.$tempuser->id.') ">
+               <button class="btn btn-danger" style="'.($issuperadmin ? "":"none").' type="submit" name="deleteUser" value="deleteUser">Delete User</button>
+               <input type="button" style="display:none" data-bs-toggle="modal" data-bs-target="#editAccountModal" id="editAccountModalButton">
+            </form>
            </form>
          </div>
        </div>
@@ -101,7 +120,22 @@ while ($row = $sqlquery->fetch_assoc()) {
 </div>
 <script>
     function editUser(id){
-        console.log(id);
+        var modal = document.getElementById("editAccountModal");
+        console.log(modal);
+        modal.addEventListener('show.bs.modal',function(event){
+            var previousName = document.getElementById("username_" + id).value;
+            console.log(previousName);
+            var previousEmail = document.getElementById("email_" + id).value;
+            var previousRole = document.getElementById("role_" + id).value;
+            document.getElementById("editUsernameInput").value = previousName;
+            $('#editUsernameCharCounter').text(previousName.length + " / 50");
+            document.getElementById("editEmailInput").value = previousEmail;
+            $('#editEmailCharCounter').text(previousEmail.length + " / 50");
+            console.log(previousRole);
+            document.getElementById("editRoleInput").value = previousRole;
+            document.getElementById("id").value = id;
+        });
+        document.getElementById("editAccountModalButton").click();
     }
 </script>
 </body>

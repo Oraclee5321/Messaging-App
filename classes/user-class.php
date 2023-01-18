@@ -30,7 +30,8 @@ class User
             $_SESSION['email'] = $this->email;
             header("Location: ../main_page.php");
         } else {
-            echo "Nooo";
+            $_SESSION['error'] = "Incorrect password and/or email";
+            header("Location: ../index.php");
         }
     }
 
@@ -43,8 +44,10 @@ class User
         header("Location: main_page.php");
     }
 
-    function insert($password_input, $salt_input)
+    function insert($password_input, $salt_input, $conn)
     {
+        mysqli_real_escape_string($conn, $password_input);
+        mysqli_real_escape_string($conn, $salt_input);
         $sql = "INSERT INTO users (username, email, password,role_num,salt) VALUES ('$this->username', '$this->email', '$password_input', '0', '$salt_input')";
         $sqlquery = $this->conn->query($sql);
     }
@@ -89,6 +92,12 @@ class User
         $sql = "DELETE FROM users WHERE id =".$this->id."";
         $sqlquery = $conn->query($sql);
         header("Location: ../admin-menu.php");
+    }
+    static function getRole($conn,$id){
+        $sql = "SELECT role_num FROM users WHERE id = '".$id."'";
+        $sqlquery = $conn->query($sql);
+        $row = $sqlquery->fetch_assoc();
+        return $row['role_num'];
     }
 }
 
