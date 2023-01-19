@@ -4,9 +4,7 @@ include "php-functions/db-connection.php";
 include "classes/user-class.php";
 $conn = connect();
 $user = new User($_SESSION['UID'], $_SESSION['username'], $_SESSION['email'], $_SESSION['role'], connect());
-if ($user->role_num < 1){
-    header("Location: main_page.php");
-} ?>
+ ?>
 <html>
 <head>
     <title>Admin Menu</title>
@@ -15,6 +13,10 @@ if ($user->role_num < 1){
 <body>
 
 <?php include "modules/navbar.php";
+if ($user->role_num < 1){
+    $_SESSION['Error'] = "You do not have permission to access this page.";
+    header("Location: main_page.php");
+}
 if (isset($_SESSION['error'])){
     ?><div class="alert alert-danger" role="alert">
         <?php echo $_SESSION['error'];?>

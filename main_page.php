@@ -14,18 +14,26 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (isset($_POST['newMessageInput'])){
-            $newMessageInput = $_POST['newMessageInput'];
-            $user->sendMessage($newMessageInput, $conn);
+            $message = $_POST['newMessageInput'];
+            $message = str_replace("\r\n","<br>",$message);
+            $message = mysqli_real_escape_string($conn,$message);
+            $user->sendMessage($message, $conn);
         }
         if (isset($_POST['editMessageInput'])){
             $id = $_POST['messageIDValue'];
-            $text = mysqli_real_escape_string($conn,$_POST['editMessageInput']);
+            $text = $_POST['editMessageInput'];
+            $text = str_replace("\r\n","<br>",$text);
+            $text = mysqli_real_escape_string($conn,$text);
             $user->editMessage($id,$text,$conn);
         }
         if (isset($_POST['deletePostCheck'])){;
             $id = $_POST['messageID'];
             $user->deletePost($id,$conn);
         }
+    }
+    if (isset($_SESSION['Error'])){
+            echo "<div class='alert alert-danger' role='alert'>".$_SESSION['Error']."</div>";
+            unset($_SESSION['Error']);
     }
     ?>
 
