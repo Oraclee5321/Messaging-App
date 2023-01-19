@@ -1,4 +1,5 @@
 <?php
+session_start();
 include "php-functions/db-connection.php";
 include "classes/user-class.php";
 $conn = connect();

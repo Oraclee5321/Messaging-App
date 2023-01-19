@@ -3,8 +3,8 @@ $(document).ready(function() {
         if ($(this).is(':checked')) {
             $('input[type="password"]').attr('type', 'text');
         } else {
-            $('input[type="text"]').attr('type', 'password');
-        }
+            $('input[type="text"][id!="usernameInput"]').attr('type', 'password');
+        };
     });
 });
 

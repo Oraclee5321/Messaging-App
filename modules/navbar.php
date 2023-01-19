@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg bg-light">
+<nav class="navbar navbar-expand-lg bg-light sticky-top">
     <div class="container-fluid">
         <a class="navbar-brand" href=#>Navbar</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -15,6 +15,11 @@
                 <li class="nav-item">
                     <a class="nav-link" aria-current="page" href="php-functions/log-out.php">Log Out</a>
                 </li>
+                <?php if ($user->role_num >= 1) { ?>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="admin-menu.php">Admin</a>
+                    </li>
+                <?php } ?>
                 <li class="navbar-text">
                     <?php
                     if (isset($_SESSION['username'])) {

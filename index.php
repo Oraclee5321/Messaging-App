@@ -13,6 +13,16 @@
     <script src="modules/reveal-passwords.js"></script>
 
 </head>
+<?php
+session_start();
+if (isset($_SESSION['error'])){
+?><div class="alert alert-danger" role="alert">
+    <?php echo $_SESSION['error'];?>
+</div><?php
+    unset($_SESSION['error']);
+}
+session_destroy();
+?>
 <body>
     <div class="container-sm w-25">
         <form action="php-functions/sign-in.php" method="POST">
@@ -20,7 +30,7 @@
                 <label for="emailInput" class="form-label">Email Address</label>
                 <input type="email" class="form-control" name="emailInput" id="emailInput" aria-describedby="emailHelp">
             </div>
-            <div class="mb-3">
+            <div class="mb-3" id="passwordInputDiv">
                 <label for="passwordInput" class="form-label">Password</label>
                 <input type="password" class="form-control" name="passwordInput" id="passwordInput" aria-describedby="passwordHelp">
                 <input type="checkbox"> <label class="form-label"> Show Password</label>

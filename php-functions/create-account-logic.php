@@ -1,4 +1,5 @@
 <?php
+    session_start();
     include "db-connection.php";
     include "../classes/user-class.php";
     function generateSalt(){
@@ -18,7 +19,10 @@
             return true;
         }
         else{
-            return false;
+            $_SESSION['error'] = "Passwords do not match.";
+            $_SESSION['email'] = $_POST['emailInput'];
+            $_SESSION['username'] = $_POST['usernameInput'];
+            header ("Location: ../create-account.php");
         }
     }
     $salt = generateSalt();
@@ -27,9 +31,10 @@
     $password = encryptPassword($_POST['passwordInput'],$salt);
     $passwordBare = $_POST['passwordInput'];
     $passwordConfirm = $_POST['passwordInputConfirm'];
+    $conn = connect();
     if (checkPasswords($passwordBare,$passwordConfirm)){
         $user = new User(0,$username,$email,0,$conn);
-        $user->insert($password,$salt);
+        $user->insert($password,$salt,$conn);
         header("Location: ../index.php");
     }
     else{
