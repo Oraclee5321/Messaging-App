@@ -30,6 +30,14 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
             $id = $_POST['messageID'];
             $user->deletePost($id,$conn);
         }
+        if (isset($_POST['replyMessageID'])){
+            $id = $_POST['replyMessageID'];
+            $text = $_POST['replyMessageInput'];
+            $text = str_replace("\r\n","<br>",$text);
+            $text = mysqli_real_escape_string($conn,$text);
+            $user->replyMessage($id,$text,$conn);
+        }
+
     }
     if (isset($_SESSION['Error'])){
             echo "<div class='alert alert-danger' role='alert'>".$_SESSION['Error']."</div>";
@@ -84,6 +92,29 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
             </div>
         </div>
     </div>
+    <div class="modal fade" id="replyMessageModal" tabindex="-1" aria-labelledby="replyMessageModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="replyMessageModalLabel">Reply</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="main_page.php" method="POST">
+                    <input type="hidden" name="replyMessageID" id="replyMessageID" value="">
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <textarea class="form-control" maxlength="256" minlength="1" id="replyMessageInput" value="" name="replyMessageInput"></textarea>
+                            <span class="input-group-text" id="replyCharCounter"> / 256</span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary" value="Send" name="replyMessageButton" data-bs-dismiss="modal">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <div class="container" id="messages">
         <div class="row">
             <div class="col-6 col-md-4">
@@ -111,7 +142,6 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                 $namesql = "SELECT username FROM users WHERE id = '$row[user_id]'";
                 $namesqlquery = $conn->query($namesql);
                 $username = $namesqlquery->fetch_assoc();
-
                 echo
                     '<div class="row">
                         <div class="col-6 col-md-4">
@@ -135,14 +165,55 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                                     <input type="hidden" name="deletePostCheck" value="1">
                                     <input type="submit" style="display:'.($_SESSION['role'] <=1 ? "none":"").'" class="btn btn-danger" value="Delete Message" name="deleteMessageButton"/>
                                 </form>
+                                <form action="main_page.php" method="POST">
+                                    <input type="hidden" name="messageID" value="'.$row['message_id'].'">
+                                    <input type="hidden" name="replyPostCheck" value="1">
+                                    <input type="button" class="btn btn-primary" value="Reply" onclick="replyMessageID('.$row['message_id'].')" />
+                                    <input type="button" style="display:none" value="Reply" id="replyMessageButton" data-bs-toggle="modal" data-bs-target="#replyMessageModal" id="editMessageButton"/>
+                                </form>
                                 </div>
                             </div>
                         </div>
                         <div class="col-6 col-md-4">
                         </div>
                      </div>
-                     <br>
                     ';
+                if ($row['has_reply'] == 1){
+                    $sql = "select * from replies where message_id = '$row[message_id]'";
+                    $sqlquery = $conn->query($sql);
+                    while($row = $sqlquery->fetch_assoc()){
+                        $sql = "SELECT * FROM messages WHERE message_id = '$row[new_message_id]' ORDER BY message_id DESC";
+                        $sqlquery = $conn->query($sql);
+                        echo
+                        '   
+                        <div class="row">
+                            <div class="col-6 col-md-4">
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="accordion" id="reply">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingOne">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                Accordion Item #1
+                                            </button>
+                                        </h2>
+                                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body">
+                                            test
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                            </div>
+                            </div>
+                        ';
+                    }
+
+                }else{
+                    echo '<br>';
+                }
 
             }
             $sql = "SELECT message_id,message_content FROM messages ORDER BY message_id DESC LIMIT 1";
@@ -179,6 +250,16 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                 document.getElementById("messageIDValue").value = messageID;
             });
             document.getElementById("editMessageButton").click();
+        }
+        function replyMessageID(id) {
+            var id = id;
+            console.log(id);
+            var modal=document.getElementById("replyMessageModal");
+            modal.addEventListener('show.bs.modal',function(event){
+                document.getElementById("replyMessageID").value = id;
+
+            });
+            document.getElementById("replyMessageButton").click();
         }
     </script>
 
