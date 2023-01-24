@@ -211,7 +211,6 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                                             <div class="accordion-body">
                                                 <div class="card" style="width: 15rem;background-color:'.($newmessageusername['username'] == $_SESSION['username'] ? "aqua" : "white").'">
                                                     <div class="card-title">
-                                                        User: '.$newmessageusername['username'].'
                                                     </div>
                                                     <div class="card-body" id="message_'.$messagesrow['message_id'].'">
                                                         '.$messagesrow['message_content'].'
@@ -251,11 +250,15 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
             $row = $sqlquery->fetch_assoc();
             $idresult = $row['message_id'];
             $messagecontent = $row['message_content'];
+            $countsql = "SELECT COUNT(*) FROM messages";
+            $countsqlquery = $conn->query($countsql);
+            $count = $countsqlquery->fetch_assoc();
         ?>
     </div>
     <script type="text/javascript">
         var lastMessageId = <?php echo $idresult ?>;
         var lastMessageContent = "<?php echo $messagecontent ?>";
+        var rowCount = <?php echo $count['COUNT(*)'] ?>;
         setInterval(function () {
             $.ajax({
                 type: "POST",
@@ -263,7 +266,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                 dataType: "json",
                 success: function (response) {
                     var data = response;
-                    if (lastMessageId+lastMessageContent != data) {
+                    if (rowCount+lastMessageId+lastMessageContent != data) {
                         $("#messages").load(location.href + " #messages");
                     }
                 }

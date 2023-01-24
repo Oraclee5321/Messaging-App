@@ -14,5 +14,20 @@ $(document).ready(function(){
         var completeCounter = (counter + " / 50");
         $('#editUsernameCharCounter').text(completeCounter);
     })
+    $("#replyMessageInput").bind("keyup", function(){
+        var counter = $('#replyMessageInput').val().length;
+        var completeCounter = (counter + " / 256");
+        $('#replyCharCounter').text(completeCounter);
+    })
+    $("#editAdminEmailInput").bind("keyup", function(){
+        var counter = $('#editAdminEmailInput').val().length;
+        var completeCounter = (counter + " / 50");
+        $('#editAdminEmailCharCounter').text(completeCounter);
+    })
+    $("#editAdminUsernameInput").bind("keyup", function(){
+        var counter = $('#editAdminUsernameInput').val().length;
+        var completeCounter = (counter + " / 50");
+        $('#editAdminUsernameCharCounter').text(completeCounter);
+    })
 
 })

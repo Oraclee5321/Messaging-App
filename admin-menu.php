@@ -41,15 +41,15 @@ if (isset($_SESSION['error'])){
                             <div class="col">
                                 <div class="input-group mb-3">
                                     <span class="input-group-text" id="editUsernameLabel">Username</span>
-                                    <input type="text" class="form-control" maxlength="50" minlength="1" id="editUsernameInput" name="editUsernameInput">
-                                    <span class="input-group-text" id="editUsernameCharCounter"> / 50</span>
+                                    <input type="text" class="form-control" maxlength="50" minlength="1" id="editAdminUsernameInput" name="editAdminUsernameInput">
+                                    <span class="input-group-text" id="editAdminUsernameCharCounter"> / 50</span>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="input-group mb-3">
                                     <span class="input-group-text" id="editEmailLabel">Email</span>
-                                    <input type="text" class="form-control" maxlength="50" minlength="1" id="editEmailInput" name="editEmailInput">
-                                    <span class="input-group-text" id="editEmailCharCounter"> / 50</span>
+                                    <input type="text" class="form-control" maxlength="50" minlength="1" id="editAdminEmailInput" name="editAdminEmailInput">
+                                    <span class="input-group-text" id="editAdminEmailCharCounter"> / 50</span>
                                 </div>
                             </div>
                         </div>
@@ -120,6 +120,7 @@ while ($row = $sqlquery->fetch_assoc()) {
     ';}
 ?>
 </div>
+<script src="modules/char-counter.js"></script>
 <script>
     function editUser(id){
         var modal = document.getElementById("editAccountModal");
@@ -129,10 +130,10 @@ while ($row = $sqlquery->fetch_assoc()) {
             console.log(previousName);
             var previousEmail = document.getElementById("email_" + id).value;
             var previousRole = document.getElementById("role_" + id).value;
-            document.getElementById("editUsernameInput").value = previousName;
-            $('#editUsernameCharCounter').text(previousName.length + " / 50");
-            document.getElementById("editEmailInput").value = previousEmail;
-            $('#editEmailCharCounter').text(previousEmail.length + " / 50");
+            document.getElementById("editAdminUsernameInput").value = previousName;
+            $('#editAdminUsernameCharCounter').text(previousName.length + " / 50");
+            document.getElementById("editAdminEmailInput").value = previousEmail;
+            $('#editAdminEmailCharCounter').text(previousEmail.length + " / 50");
             console.log(previousRole);
             document.getElementById("editRoleInput").value = previousRole;
             document.getElementById("id").value = id;
