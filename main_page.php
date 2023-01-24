@@ -44,7 +44,6 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
             unset($_SESSION['Error']);
     }
     ?>
-
     <br>
     <div class="modal fade" id="newMessageModal" tabindex="-1" aria-labelledby="newMessageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -142,6 +141,12 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                 $namesql = "SELECT username FROM users WHERE id = '$row[user_id]'";
                 $namesqlquery = $conn->query($namesql);
                 $username = $namesqlquery->fetch_assoc();
+                $checkifreplysql = "SELECT * FROM replies WHERE new_message_id = '$row[message_id]'";
+                $checkifreplysqlquery = $conn->query($checkifreplysql);
+                $result = $checkifreplysqlquery->fetch_assoc();
+                if (isset($result)){
+                    continue;
+                }
                 echo
                     '<div class="row">
                         <div class="col-6 col-md-4">
@@ -179,27 +184,51 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                      </div>
                     ';
                 if ($row['has_reply'] == 1){
-                    $sql = "select * from replies where message_id = '$row[message_id]'";
-                    $sqlquery = $conn->query($sql);
-                    while($row = $sqlquery->fetch_assoc()){
-                        $sql = "SELECT * FROM messages WHERE message_id = '$row[new_message_id]' ORDER BY message_id DESC";
-                        $sqlquery = $conn->query($sql);
+                    $repliessql = "select * from replies where message_id = '$row[message_id]'";
+                    $repliessqlquery = $conn->query($repliessql);
+                    while($repliesrow = $repliessqlquery->fetch_assoc()){
+                        $messagessql = "SELECT * FROM messages WHERE message_id = '$repliesrow[new_message_id]' ORDER BY message_id DESC";
+                        $messagessqlquery = $conn->query($messagessql);
+                        $messagesrow = $messagessqlquery->fetch_assoc();
+                        $newmessagenamesql = "SELECT username FROM users WHERE id = '$messagesrow[user_id]'";
+                        $newmessagenamesqlquery = $conn->query($newmessagenamesql);
+                        $newmessageusername = $newmessagenamesqlquery->fetch_assoc();
+
                         echo
                         '   
                         <div class="row">
                             <div class="col-6 col-md-4">
                             </div>
                             <div class="col-6 col-md-4">
-                                <div class="accordion" id="reply">
+                                <div class="accordion" style="width: 18rem" id="reply">
                                     <div class="accordion-item">
-                                        <h2 class="accordion-header" id="headingOne">
-                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                                Accordion Item #1
+                                        <h2 class="accordion-header" id="heading'.$messagesrow['message_id'].'">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'.$messagesrow['message_id'].'" aria-expanded="false" aria-controls="collapse'.$messagesrow['message_id'].'">
+                                                '.$newmessageusername['username'].'
                                             </button>
                                         </h2>
-                                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                        <div id="collapse'.$messagesrow['message_id'].'" class="accordion-collapse collapse show" aria-labelledby="heading'.$messagesrow['message_id'].'" data-bs-parent="#reply">
                                             <div class="accordion-body">
-                                            test
+                                                <div class="card" style="width: 15rem;background-color:'.($newmessageusername['username'] == $_SESSION['username'] ? "aqua" : "white").'">
+                                                    <div class="card-title">
+                                                        User: '.$newmessageusername['username'].'
+                                                    </div>
+                                                    <div class="card-body" id="message_'.$messagesrow['message_id'].'">
+                                                        '.$messagesrow['message_content'].'
+                                                    </div>
+                                                    <div class="card-footer"">
+                                                    <form action="" method="">
+                                                        <input type="hidden" name="messageID" value="'.$messagesrow['message_id'].'">
+                                                        <input type="button" class="btn btn-success" style="display:'.($_SESSION['role'] < 2 ? ($_SESSION['username'] == $newmessageusername['username'] ? : "none") : "").'" value="Edit Message" onclick="currentMessage('.$messagesrow['message_id'].')" />
+                                                        <button type="button" style="display:none" data-bs-toggle="modal" data-bs-target="#editMessageModal" id="editMessageButton"></button>
+                                                    </form>
+                                                    <form action="main_page.php" method="POST">
+                                                        <input type="hidden" name="messageID" value="'.$messagesrow['message_id'].'">
+                                                        <input type="hidden" name="deletePostCheck" value="1">
+                                                        <input type="submit" style="display:'.($_SESSION['role'] <=1 ? "none":"").'" class="btn btn-danger" value="Delete Message" name="deleteMessageButton"/>
+                                                    </form>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -207,9 +236,10 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                             </div>
                             <div class="col-6 col-md-4">
                             </div>
-                            </div>
+                        </div>
                         ';
                     }
+                    echo '<br>';
 
                 }else{
                     echo '<br>';
@@ -220,11 +250,12 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
             $sqlquery = $conn->query($sql);
             $row = $sqlquery->fetch_assoc();
             $idresult = $row['message_id'];
+            $messagecontent = $row['message_content'];
         ?>
     </div>
     <script type="text/javascript">
         var lastMessageId = <?php echo $idresult ?>;
-        var lastMessageContent = document.getElementById("message_"+lastMessageId).innerText;
+        var lastMessageContent = "<?php echo $messagecontent ?>";
         setInterval(function () {
             $.ajax({
                 type: "POST",

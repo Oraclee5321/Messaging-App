@@ -23,6 +23,7 @@ class User
         $sql = "SELECT id,password,salt,username,role_num FROM users WHERE email = '$this->email'";
         $sqlquery = $this->conn->query($sql);
         $row = $sqlquery->fetch_assoc();
+        $temp = password_verify($row['salt'] . $password, $row['password']);
         if (password_verify($row['salt'] . $password, $row['password'])) {
             $_SESSION['username'] = $row['username'];
             $_SESSION['role'] = $row['role_num'];
@@ -48,7 +49,6 @@ class User
     function insert($password_input, $salt_input, $conn)
     {
         mysqli_real_escape_string($conn, $password_input);
-        mysqli_real_escape_string($conn, $salt_input);
         $password_input = strip_tags($password_input);
         $salt_input = strip_tags($salt_input);
         $sql = "INSERT INTO users (username, email, password,role_num,salt) VALUES ('$this->username', '$this->email', '$password_input', '0', '$salt_input')";
