@@ -12,8 +12,8 @@ class User
     function __construct($id_input, $username_input, $email_input, $role_num_input, $conn_input)
     {
         $this->id = $id_input;
-        $this->username = strval($username_input);
-        $this->email = $email_input;
+        $this->username = strip_tags(strval($username_input));
+        $this->email = strip_tags($email_input);
         $this->role_num = $role_num_input;
         $this->conn = $conn_input;
     }
@@ -23,6 +23,7 @@ class User
         $sql = "SELECT id,password,salt,username,role_num FROM users WHERE email = '$this->email'";
         $sqlquery = $this->conn->query($sql);
         $row = $sqlquery->fetch_assoc();
+        $temp = password_verify($row['salt'] . $password, $row['password']);
         if (password_verify($row['salt'] . $password, $row['password'])) {
             $_SESSION['username'] = $row['username'];
             $_SESSION['role'] = $row['role_num'];
@@ -38,6 +39,7 @@ class User
     function sendMessage($newMessageInput, $conn)
     {
         $messageContent = mysqli_real_escape_string($conn, $newMessageInput);
+        $messageContent = strip_tags($messageContent, '<br>');
         $uid = $_SESSION['UID'];
         $sql = "INSERT INTO messages (message_content,user_id) values ('$messageContent','$uid')";
         $sqlquery = $conn->query($sql);
@@ -47,12 +49,14 @@ class User
     function insert($password_input, $salt_input, $conn)
     {
         mysqli_real_escape_string($conn, $password_input);
-        mysqli_real_escape_string($conn, $salt_input);
+        $password_input = strip_tags($password_input);
+        $salt_input = strip_tags($salt_input);
         $sql = "INSERT INTO users (username, email, password,role_num,salt) VALUES ('$this->username', '$this->email', '$password_input', '0', '$salt_input')";
         $sqlquery = $this->conn->query($sql);
     }
     
     function editMessage($id,$text,$conn){
+        $text = strip_tags($text, '<br>');
         $sql = "UPDATE messages SET message_content = '".$text."' WHERE message_id =".$id."";
         $sqlquery = $conn->query($sql);
         header("Location: main_page.php");
@@ -92,6 +96,19 @@ class User
         $sql = "DELETE FROM users WHERE id =".$this->id."";
         $sqlquery = $conn->query($sql);
         header("Location: ../admin-menu.php");
+    }
+    function replyMessage($id,$text,$conn){
+        $text = strip_tags($text);
+        $sql = "INSERT INTO messages (message_content,user_id) values ('$text','$this->id')";
+        $sqlquery = $conn->query($sql);
+        $sql = "UPDATE messages SET has_reply = 1 WHERE message_id =".$id."";
+        $sqlquery = $conn->query($sql);
+        $sql = "SELECT message_id FROM messages WHERE user_id =".$this->id." ORDER BY message_id DESC LIMIT 1 ";
+        $sqlquery = $conn->query($sql);
+        $newId = $sqlquery->fetch_assoc();
+        $sql = "INSERT INTO replies (message_id, new_message_id) values ('$id','$newId[message_id]')";
+        $sqlquery = $conn->query($sql);
+        header("Location: main_page.php");
     }
     static function getRole($conn,$id){
         $sql = "SELECT role_num FROM users WHERE id = '".$id."'";
