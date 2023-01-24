@@ -5,11 +5,11 @@ include "classes/user-class.php";
 $conn = connect();
 $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SESSION['role'],connect());
 ?>
-<html>
-<head>
-    <?php include "modules/links.php" ?>
-</head>
-<body>
+    <html>
+    <head>
+        <?php include "modules/links.php" ?>
+    </head>
+    <body>
     <?php include "modules/navbar.php" ?>
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -40,8 +40,8 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
 
     }
     if (isset($_SESSION['Error'])){
-            echo "<div class='alert alert-danger' role='alert'>".$_SESSION['Error']."</div>";
-            unset($_SESSION['Error']);
+        echo "<div class='alert alert-danger' role='alert'>".$_SESSION['Error']."</div>";
+        unset($_SESSION['Error']);
     }
     ?>
     <br>
@@ -52,11 +52,11 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                     <h1 class="modal-title fs-5" id="newMessageModalLabel">New Message</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="main_page.php" method="POST">
+                <form action="view-account.php?$id='.$_GET['$id']'"method="POST">
                     <div class="modal-body">
                         <div class="input-group mb-3">
-                                <textarea class="form-control" maxlength="256" minlength="1" id="messageInput" value="" name="newMessageInput"></textarea>
-                                <span class="input-group-text" id="charCounter"> / 256</span>
+                            <textarea class="form-control" maxlength="256" minlength="1" id="messageInput" value="" name="newMessageInput"></textarea>
+                            <span class="input-group-text" id="charCounter"> / 256</span>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -74,7 +74,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                     <h1 class="modal-title fs-5" id="editMessageModalLabel">New Message</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="main_page.php" method="POST">
+                <form action="view-account.php?$id='.$_GET['$id']'"method="POST">
                     <div class="modal-body">
                         <div class="input-group mb-3">
                             <textarea class="form-control" maxlength="256" minlength="1" id="editMessageInput" name="editMessageInput"></textarea>
@@ -98,7 +98,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                     <h1 class="modal-title fs-5" id="replyMessageModalLabel">Reply</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="main_page.php" method="POST">
+                <form action="view-account.php?$id='.$_GET['$id']'"method="POST">
                     <input type="hidden" name="replyMessageID" id="replyMessageID" value="">
                     <div class="modal-body">
                         <div class="input-group mb-3">
@@ -135,20 +135,20 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
         </div>
         <br>
         <?php
-            $sql = "SELECT * FROM messages ORDER BY message_id DESC";
-            $sqlquery = $conn->query($sql);
-            while($row = $sqlquery->fetch_assoc()) {
-                $namesql = "SELECT id ,username FROM users WHERE id = '$row[user_id]'";
-                $namesqlquery = $conn->query($namesql);
-                $username = $namesqlquery->fetch_assoc();
-                $checkifreplysql = "SELECT * FROM replies WHERE new_message_id = '$row[message_id]'";
-                $checkifreplysqlquery = $conn->query($checkifreplysql);
-                $result = $checkifreplysqlquery->fetch_assoc();
-                if (isset($result)){
-                    continue;
-                }
-                echo
-                    '<div class="row">
+        $sql = "SELECT * FROM messages WHERE user_id = ".$_GET['$id']." ORDER BY message_id DESC";
+        $sqlquery = $conn->query($sql);
+        while($row = $sqlquery->fetch_assoc()) {
+            $namesql = "SELECT id ,username FROM users WHERE id = '$row[user_id]'";
+            $namesqlquery = $conn->query($namesql);
+            $username = $namesqlquery->fetch_assoc();
+            $checkifreplysql = "SELECT * FROM replies WHERE new_message_id = '$row[message_id]'";
+            $checkifreplysqlquery = $conn->query($checkifreplysql);
+            $result = $checkifreplysqlquery->fetch_assoc();
+            if (isset($result)){
+                continue;
+            }
+            echo
+                '<div class="row">
                         <div class="col-6 col-md-4">
                         </div>
                         <div class="col-6 col-md-4">
@@ -165,12 +165,12 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                                     <input type="button" class="btn btn-success" style="display:'.($_SESSION['role'] < 2 ? ($_SESSION['username'] == $username['username'] ? : "none") : "").'" value="Edit Message" onclick="currentMessage('.$row['message_id'].')" />
                                     <button type="button" style="display:none" data-bs-toggle="modal" data-bs-target="#editMessageModal" id="editMessageButton"></button>
                                 </form>
-                                <form action="main_page.php" method="POST">
+                                <form action="view-account.php?$id='.$_GET['$id'].'" method="POST">
                                     <input type="hidden" name="messageID" value="'.$row['message_id'].'">
                                     <input type="hidden" name="deletePostCheck" value="1">
                                     <input type="submit" style="display:'.($_SESSION['role'] <=1 ? "none":"").'" class="btn btn-danger" value="Delete Message" name="deleteMessageButton"/>
                                 </form>
-                                <form action="main_page.php" method="POST">
+                                <form action="view-account.php?$id='.$_GET['$id'].'"method="POST">
                                     <input type="hidden" name="messageID" value="'.$row['message_id'].'">
                                     <input type="hidden" name="replyPostCheck" value="1">
                                     <input type="button" class="btn btn-primary" value="Reply" onclick="replyMessageID('.$row['message_id'].')" />
@@ -183,18 +183,18 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                         </div>
                      </div>
                     ';
-                if ($row['has_reply'] == 1){
-                    $repliessql = "select * from replies where message_id = '$row[message_id]'";
-                    $repliessqlquery = $conn->query($repliessql);
-                    while($repliesrow = $repliessqlquery->fetch_assoc()){
-                        $messagessql = "SELECT * FROM messages WHERE message_id = '$repliesrow[new_message_id]' ORDER BY message_id DESC";
-                        $messagessqlquery = $conn->query($messagessql);
-                        $messagesrow = $messagessqlquery->fetch_assoc();
-                        $newmessagenamesql = "SELECT username FROM users WHERE id = '$messagesrow[user_id]'";
-                        $newmessagenamesqlquery = $conn->query($newmessagenamesql);
-                        $newmessageusername = $newmessagenamesqlquery->fetch_assoc();
+            if ($row['has_reply'] == 1){
+                $repliessql = "select * from replies where message_id = '$row[message_id]'";
+                $repliessqlquery = $conn->query($repliessql);
+                while($repliesrow = $repliessqlquery->fetch_assoc()){
+                    $messagessql = "SELECT * FROM messages WHERE message_id = '$repliesrow[new_message_id]' ORDER BY message_id DESC";
+                    $messagessqlquery = $conn->query($messagessql);
+                    $messagesrow = $messagessqlquery->fetch_assoc();
+                    $newmessagenamesql = "SELECT username FROM users WHERE id = '$messagesrow[user_id]'";
+                    $newmessagenamesqlquery = $conn->query($newmessagenamesql);
+                    $newmessageusername = $newmessagenamesqlquery->fetch_assoc();
 
-                        echo
+                    echo
                         '   
                         <div class="row">
                             <div class="col-6 col-md-4">
@@ -221,7 +221,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                                                         <input type="button" class="btn btn-success" style="display:'.($_SESSION['role'] < 2 ? ($_SESSION['username'] == $newmessageusername['username'] ? : "none") : "").'" value="Edit Message" onclick="currentMessage('.$messagesrow['message_id'].')" />
                                                         <button type="button" style="display:none" data-bs-toggle="modal" data-bs-target="#editMessageModal" id="editMessageButton"></button>
                                                     </form>
-                                                    <form action="main_page.php" method="POST">
+                                                    <form action="view-account.php?$id='.$_GET['$id'].' method="POST">
                                                         <input type="hidden" name="messageID" value="'.$messagesrow['message_id'].'">
                                                         <input type="hidden" name="deletePostCheck" value="1">
                                                         <input type="submit" style="display:'.($_SESSION['role'] <=1 ? "none":"").'" class="btn btn-danger" value="Delete Message" name="deleteMessageButton"/>
@@ -237,22 +237,22 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                             </div>
                         </div>
                         ';
-                    }
-                    echo '<br>';
-
-                }else{
-                    echo '<br>';
                 }
+                echo '<br>';
 
+            }else{
+                echo '<br>';
             }
-            $sql = "SELECT message_id,message_content FROM messages ORDER BY message_id DESC LIMIT 1";
-            $sqlquery = $conn->query($sql);
-            $row = $sqlquery->fetch_assoc();
-            $idresult = $row['message_id'];
-            $messagecontent = $row['message_content'];
-            $countsql = "SELECT COUNT(*) FROM messages";
-            $countsqlquery = $conn->query($countsql);
-            $count = $countsqlquery->fetch_assoc();
+
+        }
+        $sql = "SELECT message_id,message_content FROM messages ORDER BY message_id DESC LIMIT 1";
+        $sqlquery = $conn->query($sql);
+        $row = $sqlquery->fetch_assoc();
+        $idresult = $row['message_id'];
+        $messagecontent = $row['message_content'];
+        $countsql = "SELECT COUNT(*) FROM messages";
+        $countsqlquery = $conn->query($countsql);
+        $count = $countsqlquery->fetch_assoc();
         ?>
     </div>
     <script type="text/javascript">
@@ -297,8 +297,8 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
         }
     </script>
 
-</body>
-</html>
+    </body>
+    </html>
 <?php
 $conn->close()
 ?>
