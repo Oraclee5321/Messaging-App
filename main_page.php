@@ -158,11 +158,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                         <div class="col-6 col-md-4">
                             <div class="card" style="width: 18rem;background-color:'.($username['username'] == $_SESSION['username'] ? "aqua" : "white").'">
                                 <div class="card-title">
-<<<<<<< Updated upstream
                                     User: '.$username['username'].'
-=======
-                                    User:<a href="view-account.php?id='.$row['user_id'].'">'.$username['username'].'</a>
->>>>>>> Stashed changes
                                 </div>
                                 <div class="card-body" id="message_'.$row['message_id'].'">
                                     '.$row['message_content'].'
