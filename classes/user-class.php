@@ -18,6 +18,12 @@ class User
         $this->conn = $conn_input;
     }
 
+    function getPfp($conn){
+        $sql = "SELECT pfp_image_link FROM users WHERE id = '$this->id'";
+        $sqlquery = $conn->query($sql);
+        $row = $sqlquery->fetch_assoc();
+        return $row['pfp_image_link'];
+    }
     function checkPassword($password)
     {
         $sql = "SELECT id,password,salt,username,role_num FROM users WHERE email = '$this->email'";
