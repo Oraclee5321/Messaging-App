@@ -16,14 +16,17 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
             if (isset($_POST['editUsernameInput'])){
                 $newUsername = $_POST['editUsernameInput'];
                 $user->changeUsername($newUsername, $conn);
+                header("Location: account-settings.php");
             }
             if (isset($_POST['editEmailInput'])){
                 $newUsername = $_POST['editEmailInput'];
                 $user->changeEmail($newUsername, $conn);
+                header("Location: account-settings.php");
             }
             if (isset($_POST['deletePostCheck'])){;
                 $id = $_POST['messageID'];
                 $user->deletePost($id,$conn);
+                header("Location: account-settings.php");
             }
         }
         ?>

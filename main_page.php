@@ -18,6 +18,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
             $message = str_replace("\r\n","<br>",$message);
             $message = mysqli_real_escape_string($conn,$message);
             $user->sendMessage($message, $conn);
+            header("Location: main_page.php");
         }
         if (isset($_POST['editMessageInput'])){
             $id = $_POST['messageIDValue'];
@@ -25,10 +26,12 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
             $text = str_replace("\r\n","<br>",$text);
             $text = mysqli_real_escape_string($conn,$text);
             $user->editMessage($id,$text,$conn);
+            header("Location: main_page.php");
         }
         if (isset($_POST['deletePostCheck'])){;
             $id = $_POST['messageID'];
             $user->deletePost($id,$conn);
+            header("Location: main_page.php");
         }
         if (isset($_POST['replyMessageID'])){
             $id = $_POST['replyMessageID'];
@@ -36,6 +39,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
             $text = str_replace("\r\n","<br>",$text);
             $text = mysqli_real_escape_string($conn,$text);
             $user->replyMessage($id,$text,$conn);
+            header("Location: main_page.php");
         }
 
     }
@@ -154,7 +158,11 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                         <div class="col-6 col-md-4">
                             <div class="card" style="width: 18rem;background-color:'.($username['username'] == $_SESSION['username'] ? "aqua" : "white").'">
                                 <div class="card-title">
+<<<<<<< Updated upstream
                                     User: '.$username['username'].'
+=======
+                                    User:<a href="view-account.php?id='.$row['user_id'].'">'.$username['username'].'</a>
+>>>>>>> Stashed changes
                                 </div>
                                 <div class="card-body" id="message_'.$row['message_id'].'">
                                     '.$row['message_content'].'
@@ -267,7 +275,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                 success: function (response) {
                     var data = response;
                     if (rowCount+lastMessageId+lastMessageContent != data) {
-                        $("#messages").load(location.href + " #messages");
+                        $("#main-message").load(location.href + " #messages");
                     }
                 }
             });

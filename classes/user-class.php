@@ -43,7 +43,6 @@ class User
         $uid = $_SESSION['UID'];
         $sql = "INSERT INTO messages (message_content,user_id) values ('$messageContent','$uid')";
         $sqlquery = $conn->query($sql);
-        header("Location: main_page.php");
     }
 
     function insert($password_input, $salt_input, $conn)
@@ -59,13 +58,11 @@ class User
         $text = strip_tags($text, '<br>');
         $sql = "UPDATE messages SET message_content = '".$text."' WHERE message_id =".$id."";
         $sqlquery = $conn->query($sql);
-        header("Location: main_page.php");
     }
 
     function deletePost($id,$conn){
         $sql = "DELETE FROM messages WHERE message_id =".$id."";
         $sqlquery = $conn->query($sql);
-        header("Location: main_page.php");
     }
     function getRoleName(){
         if ($this->role_num == 0){
@@ -83,19 +80,17 @@ class User
         $sql = "UPDATE users SET username = '".$this->username."' WHERE email = '".$this->email."'";
         $sqlquery = $conn->query($sql);
         $_SESSION['username'] = $this->username;
-        header("Location: account-settings.php");
+
     }
     function changeEmail($newEmail,$conn){
         $this->email = $newEmail;
         $sql = "UPDATE users SET email = '".$this->email."' WHERE id = '".$this->id."'";
         $sqlquery = $conn->query($sql);
         $_SESSION['email'] = $this->email;
-        header("Location: account-settings.php");
     }
     function deleteUserAdmin($conn){
         $sql = "DELETE FROM users WHERE id =".$this->id."";
         $sqlquery = $conn->query($sql);
-        header("Location: ../admin-menu.php");
     }
     function replyMessage($id,$text,$conn){
         $text = strip_tags($text);
@@ -108,7 +103,7 @@ class User
         $newId = $sqlquery->fetch_assoc();
         $sql = "INSERT INTO replies (message_id, new_message_id) values ('$id','$newId[message_id]')";
         $sqlquery = $conn->query($sql);
-        header("Location: main_page.php");
+
     }
     static function getRole($conn,$id){
         $sql = "SELECT role_num FROM users WHERE id = '".$id."'";
