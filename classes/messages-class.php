@@ -15,9 +15,9 @@ class Message {
     }
 
     function save() {
-        $messageContent = mysqli_real_escape_string($this->conn, $this->message_content);
-        $messageContent = strip_tags($messageContent, '<br>');
-        $sql = "INSERT INTO messages (message_content,user_id) values ('$this->message_content','$this->user_id')";
+        $sanitized_message_content = mysqli_real_escape_string($this->conn, $this->message_content);
+        $sanitized_message_content  = strip_tags($sanitized_message_content , '<br>');
+        $sql = "INSERT INTO messages (message_content,user_id) values ('$sanitized_message_content ','$this->user_id')";
         $sqlquery = $this->conn->query($sql);
         // set messageID
     }
