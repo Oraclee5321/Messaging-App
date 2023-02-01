@@ -109,6 +109,7 @@ while ($row = $sqlquery->fetch_assoc()) {
                <input type="hidden" id="email_'.$tempuser->id.'" name="email" value="' . $tempuser->email . '">
                <input type="hidden" id="role_'.$tempuser->id.'" name="role_num" value="' . $tempuser->role_num. '">
                <input type="button" class="btn btn-primary" value="Edit User" onclick="editUser('.$tempuser->id.') ">
+               <button class="btn btn-primary" type="submit" name="resetAvatar" value="resetAvatar">Reset Avatar</button>
                <button class="btn btn-danger" style="'.($issuperadmin ? "":"none").' type="submit" name="deleteUser" value="deleteUser">Delete User</button>
                <input type="button" style="display:none" data-bs-toggle="modal" data-bs-target="#editAccountModal" id="editAccountModalButton">
             </form>

@@ -13,11 +13,16 @@ if (isset($_POST['deleteUser'])) {
     elseif ($user->role_num == 2 && $_POST ['role_num'] == 2){
         $_SESSION['error'] = "You cannot delete a Super Admin";
     }else {
-        $tempuser = new User($_POST['id'], $_POST['username'], $_POST['email'], $_POST['role'], $conn);
+        $tempuser = new User($_POST['id'], $_POST['username'], $_POST['email'], $_POST['role_num'], $conn);
         $tempuser->deleteUserAdmin($conn);
     };
     header("Location: ../admin-menu.php");
 };
+if (isset($_POST['resetAvatar'])){
+    $tempuser = new User($_POST['id'], $_POST['username'], $_POST['email'], $_POST['role_num'], $conn);
+    $tempuser->resetAvatar($conn);
+    header("Location: ../admin-menu.php");
+}
 if (isset($_POST['editUser'])){
 
     $username = $_POST['editUsernameInput'];

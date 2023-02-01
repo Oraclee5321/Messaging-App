@@ -23,14 +23,15 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                 $user->changeEmail($newUsername, $conn);
                 header("Location: account-settings.php");
             }
-            if (isset($_POST['deletePostCheck'])){;
-                $id = $_POST['messageID'];
-                $user->deletePost($id,$conn);
+            if (isset($_POST['editAvatarButton'])){
+                $newAvatar = $_FILES['editAvatarInput'];
+                $user->changeAvatar($newAvatar, $conn);
                 header("Location: account-settings.php");
             }
         }
         ?>
-        <div class="modal fade" id="editUsernameModal" tabindex="-1" aria-labelledby="editUsernameLabel" aria-hidden="false"><!-- Edit Username Modal -->
+        <!-- Edit Username Modal -->
+        <div class="modal fade" id="editUsernameModal" tabindex="-1" aria-labelledby="editUsernameLabel" aria-hidden="false">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -51,8 +52,10 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                     </form>
                 </div>
             </div>
-        </div><!-- End Edit Username Modal -->
-        <div class="modal fade" id="editEmailModal" tabindex="-1" aria-labelledby="editEmailLabel" aria-hidden="false"><!-- Edit Email Modal -->
+        </div>
+        <!-- End Edit Username Modal -->
+        <!-- Edit Email Modal -->
+        <div class="modal fade" id="editEmailModal" tabindex="-1" aria-labelledby="editEmailLabel" aria-hidden="false">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -73,11 +76,49 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                     </form>
                 </div>
             </div>
-        </div><!-- End Edit Email Modal -->
+        </div>
+        <!-- End Edit Email Modal -->
+        <!-- Edit PFP Modal -->
+        <div class="modal fade" id="editAvatarModal" tabindex="-1" aria-labelledby="editAvatarLabel" aria-hidden="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="editAvatarLabel">Edit Username</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="account-settings.php" method="POST" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <img id="editAvatarPreview" src="" width="100px" height="100px" class="rounded mx-auto d-block" alt="Avatar Preview" style="margin:auto">
+                            <div class="input-group mb-3">
+                                <input type="file" class="form-control" minlength="1" id="editAvatarInput" name="editAvatarInput">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <input type="submit" class="btn btn-primary" value="Edit" name="editAvatarButton" data-bs-dismiss="modal">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div><!-- End Edit PFP Modal -->
+
         <div class="container ">
             <div class="row">
                 <div class="col">
                     <h1>Account Settings</h1>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-6 col-md-4">
+                    <h2>Avatar</h2>
+                </div>
+                <div class="col-6 col-md-4">
+                    <img src="pfp-pictures/<?php echo $user->getPfp($conn)?>" width="100px" height="100px" class="rounded mx-auto d-block">
+                </div>
+                <div class="col-6 col-md-4">
+                    <h2><input type="button" class="btn btn-primary" value="Change" onclick="currentAvatar()" /></h2>
+                    <button type="button" style="display:none" data-bs-toggle="modal" data-bs-target="#editAvatarModal") id="editAvatarButton"></button>
                 </div>
             </div>
             <br>
@@ -136,6 +177,16 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                 });
                 document.getElementById("editEmailButton").click();
             }
+            function currentAvatar(){
+                console.log("test");
+                var modal = document.getElementById("editAvatarModal");
+                modal.addEventListener('show.bs.modal',function(event){
+                    var pfp = "pfp-pictures/<?php echo $user->getPfp($conn)?>"
+                    document.getElementById("editAvatarPreview").src = pfp;
+                    $('#editEmailCharCounter').text(<?php echo strlen($user->email) ?> + " / 50");
+                });
+                document.getElementById("editAvatarButton").click();
+            };
         </script>
     </body>
 </html>
