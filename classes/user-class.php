@@ -115,7 +115,10 @@ class User
         $sql = "SELECT pfp_image_link FROM users WHERE id = '".$this->id."'";
         $sqlquery = $conn->query($sql);
         $row = $sqlquery->fetch_assoc();
-        unlink("pfp-pictures/".$row['pfp_image_link']);
+        if ($row['pfp_image_link'] != "default.png")
+        {
+            unlink("pfp-pictures/".$row['pfp_image_link']);
+        }
         $file_extension = pathinfo($newAvatar['name']);
         $file_extension = $file_extension['extension'];
         $newAvatar['name'] = $this->id.".".$file_extension;
