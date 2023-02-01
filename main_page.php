@@ -142,7 +142,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
             $sql = "SELECT * FROM messages ORDER BY message_id DESC";
             $sqlquery = $conn->query($sql);
             while($row = $sqlquery->fetch_assoc()) {
-                $namesql = "SELECT username FROM users WHERE id = '$row[user_id]'";
+                $namesql = "SELECT username, pfp_image_link FROM users WHERE id = '$row[user_id]'";
                 $namesqlquery = $conn->query($namesql);
                 $username = $namesqlquery->fetch_assoc();
                 $checkifreplysql = "SELECT * FROM replies WHERE new_message_id = '$row[message_id]'";
@@ -158,7 +158,8 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                         <div class="col-6 col-md-4">
                             <div class="card" style="width: 18rem;background-color:'.($username['username'] == $_SESSION['username'] ? "aqua" : "white").'">
                                 <div class="card-title">
-                                    User: '.$username['username'].'
+                                    <img src="pfp-pictures/'.$username['pfp_image_link'].'" width="100px" height="100px" class="rounded">
+                                    '.$username['username'].'
                                 </div>
                                 <div class="card-body" id="message_'.$row['message_id'].'">
                                     '.$row['message_content'].'
@@ -194,7 +195,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                         $messagessql = "SELECT * FROM messages WHERE message_id = '$repliesrow[new_message_id]' ORDER BY message_id DESC";
                         $messagessqlquery = $conn->query($messagessql);
                         $messagesrow = $messagessqlquery->fetch_assoc();
-                        $newmessagenamesql = "SELECT username FROM users WHERE id = '$messagesrow[user_id]'";
+                        $newmessagenamesql = "SELECT username, pfp_image_link FROM users WHERE id = '$messagesrow[user_id]'";
                         $newmessagenamesqlquery = $conn->query($newmessagenamesql);
                         $newmessageusername = $newmessagenamesqlquery->fetch_assoc();
 
@@ -208,6 +209,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                                     <div class="accordion-item">
                                         <h2 class="accordion-header" id="heading'.$messagesrow['message_id'].'">
                                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse'.$messagesrow['message_id'].'" aria-expanded="false" aria-controls="collapse'.$messagesrow['message_id'].'">
+                                                <img src="pfp-pictures/'.$newmessageusername['pfp_image_link'].'" width="50px" height="50px" class="rounded">
                                                 '.$newmessageusername['username'].'
                                             </button>
                                         </h2>
