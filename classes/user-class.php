@@ -1,4 +1,5 @@
 <?php
+include "messages-class.php";
 
 
 class User
@@ -44,11 +45,9 @@ class User
 
     function sendMessage($newMessageInput, $conn)
     {
-        $messageContent = mysqli_real_escape_string($conn, $newMessageInput);
-        $messageContent = strip_tags($messageContent, '<br>');
-        $uid = $_SESSION['UID'];
-        $sql = "INSERT INTO messages (message_content,user_id) values ('$messageContent','$uid')";
-        $sqlquery = $conn->query($sql);
+        $m = new Message($newMessageInput, $this->id, $conn);
+        $m->save();
+        // echo $m->message_id;
     }
 
     function insert($password_input, $salt_input, $conn)

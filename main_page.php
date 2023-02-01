@@ -273,7 +273,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                 success: function (response) {
                     var data = response;
                     if (rowCount+lastMessageId+lastMessageContent != data) {
-                        $("#main-message").load(location.href + " #messages");
+                        $("#messages").load(location.href + " #messages");
                     }
                 }
             });
