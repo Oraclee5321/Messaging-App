@@ -111,6 +111,19 @@ class User
         $sqlquery = $conn->query($sql);
 
     }
+    function changeAvatar($newAvatar,$conn){
+        $sql = "SELECT pfp_image_link FROM users WHERE id = '".$this->id."'";
+        $sqlquery = $conn->query($sql);
+        $row = $sqlquery->fetch_assoc();
+        unlink("pfp-pictures/".$row['pfp_image_link']);
+        $file_extension = pathinfo($newAvatar['name']);
+        $file_extension = $file_extension['extension'];
+        $newAvatar['name'] = $this->id.".".$file_extension;
+        move_uploaded_file($newAvatar['tmp_name'], "pfp-pictures/".$newAvatar['name']);
+        $sql = "UPDATE users SET pfp_image_link = '".$newAvatar['name']."' WHERE id = '".$this->id."'";
+        $sqlquery = $conn->query($sql);
+    }
+
     static function getRole($conn,$id){
         $sql = "SELECT role_num FROM users WHERE id = '".$id."'";
         $sqlquery = $conn->query($sql);

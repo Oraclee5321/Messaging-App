@@ -23,9 +23,9 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                 $user->changeEmail($newUsername, $conn);
                 header("Location: account-settings.php");
             }
-            if (isset($_POST['deletePostCheck'])){;
-                $id = $_POST['messageID'];
-                $user->deletePost($id,$conn);
+            if (isset($_POST['editAvatarButton'])){
+                $newAvatar = $_FILES['editAvatarInput'];
+                $user->changeAvatar($newAvatar, $conn);
                 header("Location: account-settings.php");
             }
         }
@@ -86,11 +86,11 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                         <h1 class="modal-title fs-5" id="editAvatarLabel">Edit Username</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="account-settings.php" method="POST">
+                    <form action="account-settings.php" method="POST" enctype="multipart/form-data">
                         <div class="modal-body">
-                            <img id="editAvatarPreview" src="..." width="100px" height="100px" class="rounded mx-auto d-block" alt="Avatar Preview" style="margin:auto">
+                            <img id="editAvatarPreview" src="" width="100px" height="100px" class="rounded mx-auto d-block" alt="Avatar Preview" style="margin:auto">
                             <div class="input-group mb-3">
-                                <input type="file" class="form-control" maxlength="255" minlength="1" id="editAvatarInput" name="editAvatarInput">
+                                <input type="file" class="form-control" minlength="1" id="editAvatarInput" name="editAvatarInput">
                             </div>
                         </div>
                         <div class="modal-footer">
