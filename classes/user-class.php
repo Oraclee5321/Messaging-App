@@ -19,12 +19,7 @@ class User
         $this->conn = $conn_input;
     }
 
-    function getPfp($conn){
-        $sql = "SELECT pfp_image_link FROM users WHERE id = '$this->id'";
-        $sqlquery = $conn->query($sql);
-        $row = $sqlquery->fetch_assoc();
-        return $row['pfp_image_link'];
-    }
+    //Login Functions
     function checkPassword($password)
     {
         $sql = "SELECT id,password,salt,username,role_num FROM users WHERE email = '$this->email'";
@@ -43,13 +38,6 @@ class User
         }
     }
 
-    function sendMessage($newMessageInput, $conn)
-    {
-        $m = new Message($newMessageInput, $this->id, $conn);
-        $m->save();
-        // echo $m->message_id;
-    }
-
     function insert($password_input, $salt_input, $conn)
     {
         mysqli_real_escape_string($conn, $password_input);
@@ -58,16 +46,41 @@ class User
         $sql = "INSERT INTO users (username, email, password,role_num,salt) VALUES ('$this->username', '$this->email', '$password_input', '0', '$salt_input')";
         $sqlquery = $this->conn->query($sql);
     }
+    //End Login Functions
+
+    // Message Functions
+    function sendMessage($newMessageInput, $conn)
+    {
+        $m = new Message($newMessageInput, $this->id, $conn);
+        $m->save();
+    }
     
-    function editMessage($id,$text,$conn){
-        $text = strip_tags($text, '<br>');
-        $sql = "UPDATE messages SET message_content = '".$text."' WHERE message_id =".$id."";
-        $sqlquery = $conn->query($sql);
+    function editMessage($message_id,$text,$conn) {
+        $m = Message::getById($message_id,$conn);
+        $m->message_content = $text;
+        $m->update();
     }
 
-    function deletePost($id,$conn){
-        $sql = "DELETE FROM messages WHERE message_id =".$id."";
+    function deletePost($message_id,$conn){
+        $m = Message::getById($message_id,$conn);
+        $m->delete();
+    }
+
+    function replyMessage($message_id,$newMessageInput,$conn)
+    {
+        $m = new Message($newMessageInput, $this->id, $conn);
+        $m->save();
+        Message::setReply($message_id,$conn);
+        Message::addReply($message_id,$m->message_id,$conn);
+    }
+    //End Message Functions
+
+    //User Functions
+    function getPfp($conn){
+        $sql = "SELECT pfp_image_link FROM users WHERE id = '$this->id'";
         $sqlquery = $conn->query($sql);
+        $row = $sqlquery->fetch_assoc();
+        return $row['pfp_image_link'];
     }
     function getRoleName(){
         if ($this->role_num == 0){
@@ -97,19 +110,7 @@ class User
         $sql = "DELETE FROM users WHERE id =".$this->id."";
         $sqlquery = $conn->query($sql);
     }
-    function replyMessage($id,$text,$conn){
-        $text = strip_tags($text);
-        $sql = "INSERT INTO messages (message_content,user_id) values ('$text','$this->id')";
-        $sqlquery = $conn->query($sql);
-        $sql = "UPDATE messages SET has_reply = 1 WHERE message_id =".$id."";
-        $sqlquery = $conn->query($sql);
-        $sql = "SELECT message_id FROM messages WHERE user_id =".$this->id." ORDER BY message_id DESC LIMIT 1 ";
-        $sqlquery = $conn->query($sql);
-        $newId = $sqlquery->fetch_assoc();
-        $sql = "INSERT INTO replies (message_id, new_message_id) values ('$id','$newId[message_id]')";
-        $sqlquery = $conn->query($sql);
 
-    }
     function changeAvatar($newAvatar,$conn){
         $sql = "SELECT pfp_image_link FROM users WHERE id = '".$this->id."'";
         $sqlquery = $conn->query($sql);
@@ -133,6 +134,7 @@ class User
         $sql = "UPDATE users SET pfp_image_link = 'default.png' WHERE id = '".$this->id."'";
         $sqlquery = $conn->query($sql);
     }
+    //End User Functions
 
     static function getRole($conn,$id){
         $sql = "SELECT role_num FROM users WHERE id = '".$id."'";
