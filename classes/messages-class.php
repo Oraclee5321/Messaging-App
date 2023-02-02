@@ -5,6 +5,8 @@ class Message {
     public $user_id;
     public $conn;
     public $has_reply;
+    public $username;
+    public $pfp_image_link;
 
     function __construct($message_content, $user_id, $conn){
         // $this->message_id = $message_id;
@@ -22,6 +24,21 @@ class Message {
         $m->message_id = $row['message_id'];
         $m->has_reply = $row['has_reply'];
         return $m;
+    }
+
+    static function getAll($conn){
+        $sql = "SELECT message_id,message_content,user_id,has_reply,users.username,users.pfp_image_link FROM messages LEFT JOIN users ON messages.user_id = users.id ORDER BY message_id DESC;";
+        $sqlquery = $conn->query($sql);
+        $messages = array();
+        while ($row = $sqlquery->fetch_assoc()){
+            $m = new Message($row['message_content'], $row['user_id'], $conn);
+            $m->message_id = $row['message_id'];
+            $m->has_reply = $row['has_reply'];
+            $m->username = $row['username'];
+            $m->pfp_image_link = $row['pfp_image_link'];
+            array_push($messages, $m);
+        }
+        return $messages;
     }
 
     function save() {

@@ -139,8 +139,49 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
         </div>
         <br>
         <?php
+        $messages = Message::getAll($conn);
+        foreach ($messages as $message){
+            ?>
+            <div class="row">
+                <div class="col-6 col-md-4">
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="card" style="width: 18rem;background-color:<?php echo($message->username == $_SESSION['username'] ? "aqua" : "white")?>">
+                        <div class="card-title">
+                            <img src="pfp-pictures/<?php echo $message->pfp_image_link?>" width="100px" height="100px" class="rounded">
+                            <?php echo $message->username?>
+                        </div>
+                        <div class="card-body" id="message_'.$row['message_id'].'">
+                            <?php echo $message->message_content?>
+                        </div>
+                        <div class="card-footer"">
+                        <form action="" method="">
+                            <input type="hidden" name="messageID" value="'.$row['message_id'].'">
+                            <input type="button" class="btn btn-success" style="display:<?php echo($_SESSION['role'] < 2 ? ($_SESSION['username'] == $message->username['username'] ? : "none") : "")?>" value="Edit Message" onclick="currentMessage('.$row['message_id'].')" />
+                            <button type="button" style="display:none" data-bs-toggle="modal" data-bs-target="#editMessageModal" id="editMessageButton"></button>
+                        </form>
+                        <form action="main_page.php" method="POST">
+                            <input type="hidden" name="messageID" value="'.$row['message_id'].'">
+                            <input type="hidden" name="deletePostCheck" value="1">
+                            <input type="submit" style="display:<?php echo($_SESSION['role'] <=1 ? "none":"")?>" class="btn btn-danger" value="Delete Message" name="deleteMessageButton"/>
+                        </form>
+                        <form action="main_page.php" method="POST">
+                            <input type="hidden" name="messageID" value="'.$row['message_id'].'">
+                            <input type="hidden" name="replyPostCheck" value="1">
+                            <input type="button" class="btn btn-primary" value="Reply" onclick="replyMessageID(<?php echo $message->message_id?>)" />
+                            <input type="button" style="display:none" value="Reply" id="replyMessageButton" data-bs-toggle="modal" data-bs-target="#replyMessageModal" id="editMessageButton"/>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                </div>
+            </div>
+            <br>
+            <?php
+        }
+        /*
             $sql = "SELECT * FROM messages ORDER BY message_id DESC";
-            $sqlquery = $conn->query($sql);
             while($row = $sqlquery->fetch_assoc()) {
                 $namesql = "SELECT username, pfp_image_link FROM users WHERE id = '$row[user_id]'";
                 $namesqlquery = $conn->query($namesql);
@@ -251,6 +292,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                 }
 
             }
+        */
             $sql = "SELECT message_id,message_content FROM messages ORDER BY message_id DESC LIMIT 1";
             $sqlquery = $conn->query($sql);
             $row = $sqlquery->fetch_assoc();
