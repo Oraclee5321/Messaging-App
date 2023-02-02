@@ -45,13 +45,11 @@ class Message {
         $sqlquery = $this->conn->query($sql);
     }
 
-    static function setReply($message_id,$conn){
-        $sql = "UPDATE messages SET has_reply = 1 WHERE message_id =".$message_id."";
-        $sqlquery = $conn->query($sql);
-    }
-    static function addReply($message_id,$new_message_id,$conn){
-        $sql = "INSERT INTO replies (message_id, new_message_id) values ('$message_id','$new_message_id')";
-        $sqlquery = $conn->query($sql);
+    function setReply($original_message_id){
+        $sql = "UPDATE messages SET has_reply = 1 WHERE message_id =".$original_message_id."";
+        $sqlquery = $this->conn->query($sql);
+        $sql = "INSERT INTO replies (message_id, new_message_id) values ('$original_message_id','$this->message_id')";
+        $sqlquery = $this->conn->query($sql);
     }
 
 }

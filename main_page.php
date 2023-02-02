@@ -265,6 +265,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
         var lastMessageId = <?php echo $idresult ?>;
         var lastMessageContent = "<?php echo $messagecontent ?>";
         var rowCount = <?php echo $count['COUNT(*)'] ?>;
+        var check = rowCount+""+lastMessageId+""+lastMessageContent;
         setInterval(function () {
             $.ajax({
                 type: "POST",
@@ -272,7 +273,7 @@ $user = new User($_SESSION['UID'],$_SESSION['username'],$_SESSION['email'],$_SES
                 dataType: "json",
                 success: function (response) {
                     var data = response;
-                    if (rowCount+lastMessageId+lastMessageContent != data) {
+                    if (check != data) {
                         $("#messages").load(location.href + " #messages");
                     }
                 }

@@ -66,12 +66,11 @@ class User
         $m->delete();
     }
 
-    function replyMessage($message_id,$newMessageInput,$conn)
+    function replyMessage($original_message_id,$newMessageInput,$conn)
     {
         $m = new Message($newMessageInput, $this->id, $conn);
         $m->save();
-        Message::setReply($message_id,$conn);
-        Message::addReply($message_id,$m->message_id,$conn);
+        $m->setReply($original_message_id);
     }
     //End Message Functions
 
